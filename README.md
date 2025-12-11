@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# r2d2-agent
 
-## Getting Started
+AgentOps Foundry / R2D2 — Autonomous AI workflow agent for GitHub repos.
 
-First, run the development server:
+## What it does (short)
+- Kestra fetches repo state and summarizes it.
+- Cline executes simple autonomous code tasks (e.g., update docs).
+- Oumi used for a basic RL decision model.
+- CodeRabbit reviews PRs created by the agent.
+- Vercel hosts the judge-facing dashboard.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## How to run locally (short)
+1. `nvm use --lts`
+2. `npm install`
+3. `npm run dev`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tracks targeted
+- Cline (Infinity Build)
+- Kestra (Wakanda Data)
+- Oumi (Iron Intelligence)
+- Vercel (Stormbreaker)
+- CodeRabbit (Captain Code)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+(Expand this README as you develop; include architecture & demo steps later.)
