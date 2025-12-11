@@ -22,3 +22,6 @@ AgentOps Foundry / R2D2 — Autonomous AI workflow agent for GitHub repos.
 - CodeRabbit (Captain Code)
 
 (Expand this README as you develop; include architecture & demo steps later.)
+
+## Live Demo
+https://r2d2-agent.vercel.app/
