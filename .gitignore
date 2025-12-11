@@ -17,3 +17,5 @@ out/
 .vscode/
 .idea/
 .DS_Store
+infra/kestra/.env
+infra/kestra/.env_encoded
