@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  kestra:
+    image: kestra/kestra:latest
+    command: ["server","standalone"]
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env_encoded           # <-- loads SECRET_* env vars into container
+    environment:
+      # set DOCKER_HOST so Kestra Docker task runner can call host docker
+      DOCKER_HOST: unix:///var/run/docker.sock
+      # inline kestra configuration (keeps simple)
+      KESTRA_CONFIGURATION: >-
+        kestra:
+          server:
+            basic-auth:
+              enabled: false
+          repository:
+            type: memory
+          storage:
+            type: local
+            local:
+              basePath: /data/kestra
+          queue:
+            type: memory
+    volumes:
+      - kestra-storage:/data/kestra
+      - /var/run/docker.sock:/var/run/docker.sock   # give container access to host docker
+    # run as root inside container (so it can access socket)
+    user: "0:0"
+
+volumes:
+  kestra-storage:

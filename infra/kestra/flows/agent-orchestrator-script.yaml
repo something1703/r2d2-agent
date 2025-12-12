@@ -1,0 +1,54 @@
+id: agent-orchestrator-script
+namespace: default
+tasks:
+  - id: orchestrate
+    type: io.kestra.plugin.scripts.node.Script
+    script: |
+      (async () => {
+        try {
+          const token = '{{ secret("GITHUB_TOKEN") }}';
+          if (!token) {
+            console.log('NO_TOKEN_AVAILABLE');
+            return;
+          }
+
+          const headers = { Authorization: 'token ' + token, 'User-Agent': 'kestra' };
+
+          // 1) Fetch issues
+          const res = await fetch('https://api.github.com/repos/something1703/r2d2-agent/issues', { headers });
+          if (!res.ok) {
+            const text = await res.text();
+            console.error('GITHUB_FETCH_ERROR', res.status, text);
+            return;
+          }
+          const issues = await res.json();
+
+          // 2) Build summary
+          const summary = {
+            count: Array.isArray(issues) ? issues.length : 0,
+            titles: Array.isArray(issues) ? issues.slice(0, 5).map(i => i.title) : []
+          };
+          console.log('SUMMARY:', JSON.stringify(summary));
+
+          // 3) POST to Next.js API (Docker bridge IP)
+          await fetch('http://172.17.0.1:3000/api/kestra-summary', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(summary),
+          });
+
+          if (summary.count > 0) {
+            await fetch('http://172.17.0.1:3000/api/run-agent', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ summary }),
+            });
+            console.log('TRIGGERED_RUN_AGENT');
+          }
+
+          console.log('DONE');
+        } catch (e) {
+          console.error('SCRIPT_ERROR', e && e.stack ? e.stack : e);
+          process.exit(1);
+        }
+      })();
