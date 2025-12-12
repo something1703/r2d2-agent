@@ -1,0 +1,260 @@
+.repo-summary {
+  margin: 20px 0;
+}
+
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.summary-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #ffffff;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #00ff88;
+  color: #000000;
+  font-weight: 700;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 255, 136, 0.5);
+  background: #00cc6a;
+}
+
+.btn-secondary {
+  background: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #333333;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #2a2a2a;
+  border-color: #00ff88;
+}
+
+.last-refresh {
+  font-size: 12px;
+  color: #808080;
+  margin-bottom: 15px;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.alert-error {
+  background: #2a0000;
+  border: 1px solid #ff4444;
+  color: #ff6666;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #808080;
+}
+
+.spinner {
+  border: 3px solid #1a1a1a;
+  border-top: 3px solid #00ff88;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 15px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #0a0a0a;
+  border-radius: 12px;
+  border: 2px dashed #1a1a1a;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  margin: 0 0 10px;
+  color: #ffffff;
+}
+
+.empty-state p {
+  color: #808080;
+  margin: 0;
+}
+
+.summary-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.summary-card {
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 255, 136, 0.1);
+  transition: all 0.2s;
+}
+
+.summary-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 255, 136, 0.2);
+  transform: translateY(-2px);
+  border-color: #00ff88;
+}
+
+.card-header {
+  background: #000000;
+  border-bottom: 1px solid #00ff88;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-date {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.card-badge {
+  background: rgba(0, 255, 136, 0.2);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #00ff88;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.summary-item {
+  margin-bottom: 15px;
+}
+
+.summary-item strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #00ff88;
+}
+
+.summary-item p {
+  margin: 0;
+  color: #a0a0a0;
+  line-height: 1.6;
+}
+
+.summary-item ul {
+  margin: 8px 0 0 20px;
+  color: #a0a0a0;
+}
+
+.summary-item li {
+  margin-bottom: 4px;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #000000;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 12px;
+  color: #808080;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.stat-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.stat-value.open {
+  color: #00ff88;
+}
+
+.stat-value.closed {
+  color: #808080;
+}
+
+.raw-data {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #1a1a1a;
+}
+
+.raw-data summary {
+  cursor: pointer;
+  color: #00ff88;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.raw-data pre {
+  background: #000000;
+  padding: 15px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 12px;
+  margin-top: 10px;
+  border: 1px solid #1a1a1a;
+  color: #a0a0a0;
+}

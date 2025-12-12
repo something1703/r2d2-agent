@@ -1,0 +1,163 @@
+name: R2D2 Agent - Autonomous Code Assistant
+
+on:
+  issues:
+    types: [opened, labeled]
+  schedule:
+    - cron: '0 */12 * * *'  # Every 12 hours
+  workflow_dispatch:  # Manual trigger
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'code-review'
+        type: choice
+        options:
+          - code-review
+          - fix-issues
+          - update-docs
+
+jobs:
+  ai-agent:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          npm install -g @githubnext/github-copilot-cli 2>/dev/null || echo "Copilot CLI optional"
+          pip install requests beautifulsoup4
+      
+      - name: Analyze repository
+        id: analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Fetch open issues
+          echo "📊 Analyzing repository health..."
+          
+          ISSUE_COUNT=$(gh issue list --state open --json number --jq 'length')
+          echo "issue_count=$ISSUE_COUNT" >> $GITHUB_OUTPUT
+          
+          # Check last commit date
+          LAST_COMMIT_DATE=$(git log -1 --format=%ct)
+          CURRENT_DATE=$(date +%s)
+          DAYS_SINCE_COMMIT=$(( ($CURRENT_DATE - $LAST_COMMIT_DATE) / 86400 ))
+          echo "days_since_commit=$DAYS_SINCE_COMMIT" >> $GITHUB_OUTPUT
+          
+          # Count TODO comments
+          TODO_COUNT=$(grep -r "TODO" --include="*.ts" --include="*.tsx" --include="*.js" --include="*.py" . 2>/dev/null | wc -l || echo "0")
+          echo "todo_count=$TODO_COUNT" >> $GITHUB_OUTPUT
+          
+          echo "📈 Metrics: Issues=$ISSUE_COUNT, Days since commit=$DAYS_SINCE_COMMIT, TODOs=$TODO_COUNT"
+      
+      - name: AI Decision Engine
+        id: decide
+        run: |
+          ISSUE_COUNT="${{ steps.analyze.outputs.issue_count }}"
+          DAYS="${{ steps.analyze.outputs.days_since_commit }}"
+          TODO_COUNT="${{ steps.analyze.outputs.todo_count }}"
+          
+          echo "🤖 AI Decision Engine analyzing metrics..."
+          
+          ACTION="none"
+          REASON="Repository health is good"
+          
+          if [ "$ISSUE_COUNT" -gt 5 ]; then
+            ACTION="fix-issues"
+            REASON="Found $ISSUE_COUNT open issues - needs attention"
+          elif [ "$DAYS" -gt 7 ]; then
+            ACTION="update-docs"
+            REASON="Repository inactive for $DAYS days"
+          elif [ "$TODO_COUNT" -gt 10 ]; then
+            ACTION="code-review"
+            REASON="Found $TODO_COUNT TODO items to address"
+          fi
+          
+          echo "action=$ACTION" >> $GITHUB_OUTPUT
+          echo "reason=$REASON" >> $GITHUB_OUTPUT
+          echo "✅ Decision: $ACTION ($REASON)"
+      
+      - name: Execute Code Review
+        if: steps.decide.outputs.action == 'code-review' || github.event.inputs.action == 'code-review'
+        run: |
+          echo "👁️ Running automated code review..."
+          bash scripts/cline-trigger.sh
+        env:
+          ACTION: code-review
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+      
+      - name: Fix Issues
+        if: steps.decide.outputs.action == 'fix-issues' || github.event.inputs.action == 'fix-issues'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTION: fix-issues
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          echo "🔧 Analyzing and documenting issues..."
+          bash scripts/cline-trigger.sh
+          
+          # Create issue summary if findings exist
+          if [ -f issue-analysis.md ]; then
+            gh issue create \
+              --title "🤖 AI Agent: Automated Issue Analysis" \
+              --body-file issue-analysis.md \
+              --label "ai-generated" || echo "Issue creation skipped"
+          fi
+      
+      - name: Update Documentation
+        if: steps.decide.outputs.action == 'update-docs' || github.event.inputs.action == 'update-docs'
+        env:
+          ACTION: update-docs
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          echo "📚 Updating documentation..."
+          bash scripts/cline-trigger.sh
+          
+          # Check if docs were updated
+          if ! git diff --quiet; then
+            git config user.name "R2D2 Agent"
+            git config user.email "r2d2-agent@users.noreply.github.com"
+            git checkout -b "r2d2/docs-update-$(date +%s)"
+            git add -A
+            git commit -m "📚 docs: AI-generated documentation update"
+            git push origin HEAD
+            
+            gh pr create \
+              --title "📚 AI-Generated Documentation Update" \
+              --body "Automated documentation improvements by R2D2 Agent based on repository analysis." \
+              --label "documentation,ai-generated" || echo "PR creation skipped"
+          fi
+      
+      - name: Report Results
+        if: always()
+        run: |
+          echo "📊 R2D2 Agent Execution Summary"
+          echo "================================"
+          echo "Decision: ${{ steps.decide.outputs.action }}"
+          echo "Reason: ${{ steps.decide.outputs.reason }}"
+          echo "Metrics:"
+          echo "  - Open Issues: ${{ steps.analyze.outputs.issue_count }}"
+          echo "  - Days Since Commit: ${{ steps.analyze.outputs.days_since_commit }}"
+          echo "  - TODO Count: ${{ steps.analyze.outputs.todo_count }}"

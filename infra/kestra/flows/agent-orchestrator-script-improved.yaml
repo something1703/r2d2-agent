@@ -1,0 +1,197 @@
+id: agent-orchestrator-script
+namespace: default
+
+description: |
+  R2D2 AI Agent - Autonomous repository health monitoring and decision-making.
+  Fetches GitHub metrics, analyzes repo health, and triggers appropriate actions.
+
+tasks:
+  - id: fetch_and_analyze
+    type: io.kestra.plugin.scripts.node.Script
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    script: |-
+      (async () => {
+        try {
+          const token = '{{ secret("GITHUB_TOKEN") }}';
+          if (!token) { 
+            console.log('NO_TOKEN_AVAILABLE'); 
+            return; 
+          }
+
+          const headers = { 
+            Authorization: 'token ' + token, 
+            'User-Agent': 'kestra-r2d2-agent' 
+          };
+
+          console.log('🔍 Fetching repository metrics...');
+
+          // Fetch repository metadata
+          const repoRes = await fetch('https://api.github.com/repos/something1703/r2d2-agent', { headers });
+          if (!repoRes.ok) { 
+            console.error('REPO_FETCH_ERROR', repoRes.status); 
+            return; 
+          }
+          const repo = await repoRes.json();
+
+          // Fetch open issues
+          const issuesRes = await fetch('https://api.github.com/repos/something1703/r2d2-agent/issues?state=open&per_page=20', { headers });
+          if (!issuesRes.ok) { 
+            console.error('ISSUES_FETCH_ERROR', issuesRes.status); 
+            return; 
+          }
+          const issues = await issuesRes.json();
+
+          // Fetch open pull requests
+          const prsRes = await fetch('https://api.github.com/repos/something1703/r2d2-agent/pulls?state=open', { headers });
+          const prs = prsRes.ok ? await prsRes.json() : [];
+
+          // Fetch recent commits (last 7 days)
+          const weekAgo = new Date();
+          weekAgo.setDate(weekAgo.getDate() - 7);
+          const commitsRes = await fetch(
+            'https://api.github.com/repos/something1703/r2d2-agent/commits?since=' + weekAgo.toISOString(), 
+            { headers }
+          );
+          const commits = commitsRes.ok ? await commitsRes.json() : [];
+
+          console.log('📊 Repository metrics collected');
+
+          // Calculate repository health score (0-100)
+          let healthScore = 100;
+          const issues_count = Array.isArray(issues) ? issues.length : 0;
+          const prs_count = Array.isArray(prs) ? prs.length : 0;
+          const commits_count = Array.isArray(commits) ? commits.length : 0;
+          
+          const lastUpdate = new Date(repo.updated_at);
+          const daysSinceUpdate = Math.floor((Date.now() - lastUpdate) / (1000 * 60 * 60 * 24));
+
+          // Health score deductions
+          if (issues_count > 10) healthScore -= 30;
+          else if (issues_count > 5) healthScore -= 15;
+          
+          if (daysSinceUpdate > 14) healthScore -= 25;
+          else if (daysSinceUpdate > 7) healthScore -= 10;
+          
+          if (prs_count > 5) healthScore -= 15;
+          if (commits_count === 0) healthScore -= 20;
+
+          // AI DECISION ENGINE
+          let action = 'none';
+          let priority = 'low';
+          let reasoning = 'Repository health is good';
+
+          if (issues_count > 10) {
+            action = 'fix-issues';
+            priority = 'high';
+            reasoning = `Critical: ${issues_count} open issues need attention`;
+          } else if (daysSinceUpdate > 14) {
+            action = 'update-docs';
+            priority = 'high';
+            reasoning = `Repository inactive for ${daysSinceUpdate} days - documentation update needed`;
+          } else if (issues_count > 5) {
+            action = 'fix-issues';
+            priority = 'medium';
+            reasoning = `${issues_count} open issues detected - gradual resolution recommended`;
+          } else if (daysSinceUpdate > 7) {
+            action = 'update-docs';
+            priority = 'medium';
+            reasoning = `${daysSinceUpdate} days since last update - keeping docs fresh`;
+          } else if (prs_count > 3) {
+            action = 'code-review';
+            priority = 'medium';
+            reasoning = `${prs_count} open PRs need review`;
+          } else if (commits_count > 0) {
+            action = 'code-review';
+            priority = 'low';
+            reasoning = 'Recent activity detected - running quality check';
+          }
+
+          const decision = {
+            action: action,
+            priority: priority,
+            reasoning: reasoning,
+            timestamp: new Date().toISOString()
+          };
+
+          const summary = {
+            repo: 'something1703/r2d2-agent',
+            health_score: healthScore,
+            metrics: {
+              open_issues: issues_count,
+              open_prs: prs_count,
+              recent_commits: commits_count,
+              days_since_update: daysSinceUpdate,
+              stars: repo.stargazers_count || 0,
+              forks: repo.forks_count || 0
+            },
+            issue_titles: Array.isArray(issues) ? issues.slice(0, 5).map(i => i.title) : [],
+            decision: decision,
+            analyzed_at: new Date().toISOString()
+          };
+
+          console.log('═══════════════════════════════════════');
+          console.log('📊 REPOSITORY HEALTH ANALYSIS');
+          console.log('═══════════════════════════════════════');
+          console.log('Health Score:', healthScore + '/100');
+          console.log('Open Issues:', issues_count);
+          console.log('Open PRs:', prs_count);
+          console.log('Recent Commits (7d):', commits_count);
+          console.log('Days Since Update:', daysSinceUpdate);
+          console.log('───────────────────────────────────────');
+          console.log('🤖 AI DECISION:');
+          console.log('Action:', action);
+          console.log('Priority:', priority);
+          console.log('Reasoning:', reasoning);
+          console.log('═══════════════════════════════════════');
+
+          // Post summary to Next.js API
+          try {
+            const host = process.env.NEXT_HOST || 'host.docker.internal';
+            const summaryRes = await fetch(`http://${host}:3000/api/kestra-summary`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(summary)
+            });
+            
+            if (summaryRes.ok) {
+              console.log('✅ Summary posted to Next.js API');
+            } else {
+              console.log('⚠️  Summary POST failed:', summaryRes.status);
+            }
+          } catch (e) {
+            console.log('⚠️  Could not reach Next.js API:', e.message);
+          }
+
+          // Execute action if needed (but NOT trigger-kestra to prevent loop!)
+          if (action !== 'none' && action !== 'trigger-kestra') {
+            try {
+              const host = process.env.NEXT_HOST || 'host.docker.internal';
+              const actionRes = await fetch(`http://${host}:3000/api/run-agent`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action, priority: priority })
+              });
+              
+              if (actionRes.ok) {
+                console.log(`✅ Triggered action: ${action}`);
+              } else {
+                console.log(`⚠️  Action trigger failed: ${actionRes.status}`);
+              }
+            } catch (e) {
+              console.log('⚠️  Could not trigger action:', e.message);
+            }
+          }
+
+          console.log('✅ WORKFLOW COMPLETED SUCCESSFULLY');
+
+        } catch (e) {
+          console.error('❌ WORKFLOW ERROR:', e && e.stack ? e.stack : e);
+          process.exit(1);
+        }
+      })();
+
+triggers:
+  - id: schedule
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "0 */6 * * *"  # Every 6 hours

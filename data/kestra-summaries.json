@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1765570501383",
+    "createdAt": "2025-12-12T20:15:01.383Z",
+    "summary": {
+      "count": 5,
+      "titles": [
+        "🤖 CodeRabbit Demo",
+        "feat/kestra integration final",
+        "chore: add live demo URL",
+        "chore: README tweak",
+        "feat: tweak homepage copy"
+      ]
+    }
+  },
+  {
+    "id": "1765533573634",
+    "createdAt": "2025-12-12T09:59:33.634Z",
+    "summary": {
+      "count": 4,
+      "titles": [
+        "feat/kestra integration final",
+        "chore: add live demo URL",
+        "chore: README tweak",
+        "feat: tweak homepage copy"
+      ]
+    }
+  }
+]
