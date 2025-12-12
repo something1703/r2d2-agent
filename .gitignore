@@ -21,3 +21,8 @@ infra/kestra/.env
 infra/kestra/.env_encoded
 .env_encoded
 .env_local
+# local secret env
+.env_encoded
+.env_local
+.env
+.env.*.local
