@@ -19,3 +19,5 @@ out/
 .DS_Store
 infra/kestra/.env
 infra/kestra/.env_encoded
+.env_encoded
+.env_local
