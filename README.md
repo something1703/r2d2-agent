@@ -1,30 +1,11 @@
 # R2D2 Agent 🤖
-
 **Autonomous AI coding assistant powered by Cline CLI, Kestra orchestration, and Oumi RL fine-tuning**
-
-> Marvel Avengers Hackathon 2025 - Built with ALL sponsor technologies
-
-## 🏆 Hackathon Integration
-
-This project demonstrates complete integration of all required sponsor technologies:
-
-- ✅ **Cline CLI** ($5,000) - Automated code fixes, PR creation, issue resolution, and code reviews
-- ✅ **Kestra** ($4,000) - AI agent orchestration with intelligent decision-making based on repo state
-- ✅ **Oumi** ($3,000) - Reinforcement Learning fine-tuning for continuous code improvement
-- ✅ **Vercel** ($2,000) - Live deployment at [https://your-deployment.vercel.app](https://your-deployment.vercel.app)
-- ✅ **CodeRabbit** ($1,000) - Automated PR reviews and code quality enforcement
-
-**Total Prize Eligibility: $15,000** 🎯
-
 ## 🌐 Live Demo
-
 - **Deployment:** [https://r2d2-agent.vercel.app](https://r2d2-agent.vercel.app)
 - **GitHub Repository:** [https://github.com/something1703/r2d2-agent](https://github.com/something1703/r2d2-agent)
 - **Kestra Workflow:** Available in local deployment
 - **CodeRabbit Activity:** Visible in Pull Requests
-
 ## 🚀 Features
-
 ### 1. Automated Issue Resolution (Cline CLI)
 - Fetches open GitHub issues automatically
 - Analyzes issue content and severity
@@ -288,19 +269,7 @@ curl -X POST http://localhost:8080/api/v1/executions/default/agent-orchestrator-
 ```bash
 python3 scripts/oumi-rl-trainer.py
 ```
-
-## 🏅 Hackathon Submission Checklist
-
-- [x] Uses Cline CLI with complete working automation
-- [x] Uses Kestra AI Agent with decision-making capability
-- [x] Uses Oumi RL fine-tuning features
-- [x] Deployed on Vercel
-- [x] CodeRabbit activity visible in PRs
-- [x] Public GitHub repository
-- [x] README with setup instructions
-- [ ] 2-minute demo video uploaded
-- [x] All sponsor technologies integrated
-
+\
 ## 🤝 Contributing
 
 This is a hackathon project, but contributions and improvements are welcome!
@@ -326,5 +295,5 @@ MIT License - See LICENSE file for details
 
 ---
 
-Built with ❤️ for the Marvel Avengers Hackathon 2025
+Building it for the love of the game.
 
