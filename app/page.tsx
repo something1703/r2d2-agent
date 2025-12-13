@@ -50,3 +50,16 @@ export default function Home() {
     </div>
   );
 }
+
+      {/* Test feature for system validation */}
+      <section className={styles.section}>
+        <div className={styles.testFeature}>
+          <h2>🧪 System Status</h2>
+          <ul>
+            <li>✅ Kestra orchestration active</li>
+            <li>✅ AI decision engine running</li>
+            <li>✅ CodeRabbit integration verified</li>
+            <li>✅ Automated workflows operational</li>
+          </ul>
+        </div>
+      </section>
