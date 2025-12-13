@@ -1,6 +1,11 @@
 # R2D2 Agent 🤖
+
 **Autonomous AI coding assistant powered by Cline CLI, Kestra orchestration, and Oumi RL fine-tuning**
+
+> 🏆 Marvel Avengers Hackathon 2025 - Built with ALL sponsor technologies
+
 ## 🌐 Live Demo
+
 - **Deployment:** [https://r2d2-agent.vercel.app](https://r2d2-agent.vercel.app)
 - **GitHub Repository:** [https://github.com/something1703/r2d2-agent](https://github.com/something1703/r2d2-agent)
 - **Kestra Workflow:** Available in local deployment
