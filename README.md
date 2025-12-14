@@ -1,61 +1,44 @@
-# R2D2 Agent 🤖
+# R2D2 Agent
 
-**Autonomous DevOps assistant powered by Cline CLI and Kestra orchestration**
+Your repository. Monitored. Analyzed. Improved. Automatically.
 
-## 🌐 Live Demo
+## What It Does
 
-- **Deployment:** [https://r2d2-agent.vercel.app](https://r2d2-agent.vercel.app)
-- **GitHub Repository:** [https://github.com/something1703/r2d2-agent](https://github.com/something1703/r2d2-agent)
+R2D2 watches your codebase. When issues pile up, it acts. When code quality drops, it reviews. When documentation falls behind, it updates.
 
-## 🚀 Features
+No meetings. No manual work. Just automation.
 
-### Automated Issue Resolution (Cline CLI)
-- Uses Cline CLI to analyze GitHub issues
-- Provides AI-powered recommendations
-- Runs autonomous code quality reviews
+**Live:** [r2d2-agent.vercel.app](https://r2d2-agent.vercel.app)
 
-**Example:**
-```bash
-# Real command used in automation
-cline -y "Analyze this GitHub issue: <issue-url>" --mode act -F json
-```
+## How It Works
 
-### Intelligent Orchestration (Kestra)
-- Monitors repository health continuously
-- Makes autonomous decisions based on repo metrics
-- Triggers appropriate actions (fix issues, update docs, code review)
+Three components. One goal.
 
-**Decision Logic:**
-- `> 5 open issues` → Trigger issue analysis
-- `> 7 days since update` → Update documentation
-- `1-5 issues` → Run code quality review
+**Kestra** monitors your repository every 6 hours. Calculates health. Makes decisions.
 
-### Automated Code Quality (CodeRabbit)
-- Reviews every PR automatically
-- Suggests improvements and best practices
-- Provides inline code suggestions
+**Cline CLI** executes those decisions. Analyzes issues. Reviews code. Provides recommendations.
 
-## � Quick Start for Other Developers
+**CodeRabbit** reviews every pull request. Suggests improvements. Enforces quality.
 
-Want to use R2D2 Agent on your own repository? Here's how:
+Simple architecture. Real results.
 
-### Method 1: GitHub Action (Easiest)
+[Read the full architecture →](ARCHITECTURE.md)
 
-1. **Copy the workflow to your repo:**
-   ```bash
-   mkdir -p .github/workflows
-   curl -o .github/workflows/r2d2-agent.yml \
-     https://raw.githubusercontent.com/something1703/r2d2-agent/main/.github/workflows/r2d2-agent.yml
-   ```
+## What You Get
 
-2. **Add required secrets:**
-   - Go to your repo → Settings → Secrets and variables → Actions
-   - Add `GITHUB_TOKEN` (automatically available)
-   - Add `OPENAI_API_KEY` (optional, for enhanced features)
+**Automated issue analysis**  
+Real AI reads your GitHub issues. Identifies root causes. Suggests fixes.
 
-3. **Done!** The agent runs automatically every 12 hours or on new issues.
+**Code quality reviews**  
+AI reviews your code. Finds problems. Recommends solutions.
 
-### Method 2: Clone and Self-Host
+**Smart orchestration**  
+Workflows run automatically. No configuration needed. Just works.
+
+**Pull request reviews**  
+Every PR gets reviewed. By AI. Within minutes.
+
+## Quick Start
 
 ```bash
 git clone https://github.com/something1703/r2d2-agent.git
@@ -74,86 +57,60 @@ npm run dev
 4. Deploy to Vercel for a full web UI
 
 ## �📦 Installation & Setup
+## Installation
 
-### Prerequisites
+**Prerequisites:**
 ```bash
-# Node.js 18+
-node --version
-
-# Docker & Docker Compose
+node --version  # 18+
 docker --version
-
-# Cline CLI
 npm install -g cline
 ```
 
-### Quick Start
-
-1. **Clone and install:**
+**Steps:**
 ```bash
+# 1. Clone
 git clone https://github.com/something1703/r2d2-agent.git
 cd r2d2-agent
-npm install
-```
 
-2. **Set up environment:**
-```bash
+# 2. Install dependencies
+npm install
+
+# 3. Configure
 cp .env.example .env.local
 # Add your GITHUB_TOKEN
-```
 
-3. **Start Kestra:**
-```bash
-cd infra/kestra
-docker-compose up -d
-```
+# 4. Start Kestra
+cd infra/kestra && docker-compose up -d && cd ../..
 
-4. **Authenticate Cline:**
-```bash
+# 5. Authenticate Cline
 cline auth
-```
 
-5. **Start app:**
-```bash
+# 6. Run
 npm run dev
 ```
 
-5. **Start Next.js development server:**
-```bash
-npm run dev
-```
+**Access:**
+- App: http://localhost:3000
+- Kestra: http://localhost:8080
 
-6. **Access the application:**
-- Frontend: http://localhost:3000
-- Kestra UI: http://localhost:8080
+Done.
 
-## 🎯 How It Works
+## Stack
 
-### Architecture Flow
+**Backend:** Next.js 16, Kestra (Docker), Cline CLI  
+**Frontend:** React, TypeScript, minimal CSS  
+**Deploy:** Vercel, GitHub Actions  
 
-```
-GitHub Repo → Kestra Agent → Decision Logic → Cline CLI → Automated Actions → CodeRabbit Review → Oumi Learning
-```
+## What's Real
 
-### Workflow Steps
+Cline CLI v1.0.8 - installed, authenticated, running  
+Kestra workflows - monitoring repo every 6 hours  
+CodeRabbit - reviewing every PR  
+Vercel - live deployment  
 
-1. **Kestra Agent** monitors GitHub repo every minute
-2. **AI Decision Engine** analyzes repo metrics (issues, last update, etc.)
-3. **Cline CLI** executes appropriate automation (fix-issues, create-pr, code-review)
-4. **CodeRabbit** reviews generated PRs and provides feedback
-5. **Oumi RL** learns from feedback to improve future suggestions
+No simulations. No fake integrations.
 
-### API Endpoints
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/run-agent` | POST | Trigger Cline CLI automation |
-| `/api/trigger-kestra` | POST | Manually trigger Kestra flow |
-| `/api/kestra-summary` | POST/GET | Receive/retrieve Kestra summaries |
-| `/api/oumi-train` | POST | Train Oumi model with feedback |
-| `/api/issues` | GET | Fetch GitHub issues |
-
-## 🛠️ Usage Examples
+## Contributing
 
 ### Trigger Issue Auto-Fix
 ```bash
@@ -180,87 +137,27 @@ curl -X POST http://localhost:3000/api/run-agent \
 ```bash
 curl -X POST http://localhost:3000/api/oumi-train \
   -H "Content-Type: application/json" \
-  -d '{
-    "codeSnippets": [{"code": "function foo() {}", "improvement": "Add return type"}],
-    "feedback": ["Good suggestion", "Helpful"]
-  }'
-```
+## Contributing
 
-## 📊 Sponsor Technology Usage
+Fork it. Improve it. Send a PR.
 
-### Cline CLI Integration
-- **Location:** [`scripts/cline-trigger.sh`](scripts/cline-trigger.sh)
-- **Features:** 5 automation actions (fix-issues, create-pr, update-docs, code-review, trigger-kestra)
-- **Demonstration:** Complete working automation tools built through CLI
+We welcome:
+- Bug fixes
+- Performance improvements
+- New automation workflows
+- Better AI decision logic
 
-### Kestra AI Agent
-- **Location:** [`infra/kestra/flows/agent-orchestrator-script.yaml`](infra/kestra/flows/agent-orchestrator-script.yaml)
-- **Features:** Summarizes GitHub data AND makes autonomous decisions
-- **Decision Logic:** 3 automated decision paths based on repo metrics
+## License
 
-### Oumi RL Fine-tuning
-- **Location:** [`scripts/oumi-rl-trainer.py`](scripts/oumi-rl-trainer.py), [`app/api/oumi-train/route.ts`](app/api/oumi-train/route.ts)
-- **Features:** Reinforcement Learning fine-tuning on code feedback
-- **Model:** microsoft/Phi-3-mini-4k-instruct
+MIT. Use it however you want.
 
-### Vercel Deployment
-- **Status:** Live deployment
-- **URL:** [https://r2d2-agent.vercel.app](https://r2d2-agent.vercel.app)
-- **Config:** [`vercel.json`](vercel.json)
+---
 
-### CodeRabbit Activity
-- **Status:** Active on repository
-- **Visible:** Check PR reviews and comments
-- **Integration:** Automatic on all PRs
+**Questions?** Open an issue.  
+**Want to use this?** Fork the repo.  
+**Like it?** Star it.
 
-## 🎬 Demo Video
-
-📹 **[Watch 2-Minute Demo](https://your-video-link.com)**
-
-Timestamps:
-- 0:00-0:20 - Project overview and architecture
-- 0:20-0:45 - Cline CLI automation in action
-- 0:45-1:10 - Kestra decision-making engine
-- 1:10-1:30 - Oumi training process
-- 1:30-1:50 - CodeRabbit PR reviews
-- 1:50-2:00 - Live deployment and wrap-up
-
-## 📁 Project Structure
-
-```
-r2d2-agent/
-├── app/                        # Next.js application
-│   ├── api/
-│   │   ├── run-agent/         # Cline CLI trigger
-│   │   ├── trigger-kestra/    # Kestra manual trigger
-│   │   ├── kestra-summary/    # Receive Kestra data
-│   │   ├── oumi-train/        # Oumi RL training
-│   │   └── issues/            # GitHub issues API
-│   └── components/            # React components
-├── infra/kestra/
-│   ├── flows/
-│   │   └── agent-orchestrator-script.yaml  # AI decision engine
-│   └── docker-compose.yml     # Kestra setup
-├── scripts/
-│   ├── cline-trigger.sh       # Cline CLI automation
-│   └── oumi-rl-trainer.py     # Oumi training script
-└── README.md                  # This file
-```
-
-## 🧪 Testing
-
-### Test Cline Automation
-```bash
-bash scripts/cline-trigger.sh
-# Set ACTION env var for specific tests:
-ACTION=code-review bash scripts/cline-trigger.sh
-```
-
-### Test Kestra Workflow
-```bash
-# Trigger via API
-curl -X POST http://localhost:8080/api/v1/executions/default/agent-orchestrator-script \
-  -u "rudra@example.com:Kestra123" \
+Simple.
   -F "execution={}" -F "inputs={}"
 ```
 
