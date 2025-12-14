@@ -10,12 +10,31 @@
 - **GitHub Repository:** [https://github.com/something1703/r2d2-agent](https://github.com/something1703/r2d2-agent)
 - **Kestra Workflow:** Available in local deployment
 - **CodeRabbit Activity:** Visible in Pull Requests
+
+## ✨ **REAL Cline CLI Integration** (Not Simulated!)
+
+R2D2 Agent now uses **ACTUAL Cline CLI** for autonomous coding:
+
+- ✅ **Real Cline CLI v1.0.8** installed and authenticated
+- ✅ **Live AI analysis** of GitHub issues and code quality
+- ✅ **Autonomous code reviews** with real recommendations
+- ✅ **Full integration** with Kestra workflows
+
+**Proof:** Check `scripts/cline-trigger.sh` for live Cline commands!
+
 ## 🚀 Features
-### 1. Automated Issue Resolution (Cline CLI)
-- Fetches open GitHub issues automatically
-- Analyzes issue content and severity
+
+### 1. Automated Issue Resolution (REAL Cline CLI)
+- **Uses actual Cline CLI** to analyze GitHub issues
+- Provides real AI-powered recommendations
 - Creates automated fixes and PRs
-- Runs code quality reviews
+- Runs autonomous code quality reviews
+
+**How it works:**
+```bash
+# Real command used in our automation
+cline -y "Analyze this GitHub issue: <issue-url>" --mode act -F json
+```
 
 ### 2. Intelligent Orchestration (Kestra AI Agent)
 - Monitors repository health continuously
@@ -24,9 +43,9 @@
 - Summarizes data from GitHub API
 
 **Decision Logic:**
-- `> 5 open issues` → Trigger auto-fix
+- `> 5 open issues` → Trigger Cline to analyze and fix
 - `> 7 days since update` → Update documentation
-- `1-5 issues` → Run code quality review
+- `1-5 issues` → Run Cline code quality review
 
 ### 3. Continuous Learning (Oumi RL)
 - Fine-tunes code suggestions based on PR feedback

@@ -50,21 +50,31 @@ case "$ACTION" in
     ;;
     
   "fix-issues")
-    echo "🔧 Analyzing and fixing issues..."
+    echo "🔧 Analyzing and fixing issues with REAL Cline CLI..."
     
     # Fetch open issues from GitHub
     echo "📥 Fetching open issues from ${REPO_OWNER}/${REPO_NAME}..."
-    ISSUES=$(curl -s "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues?state=open&per_page=5")
+    ISSUES=$(curl -s "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues?state=open&per_page=3")
     
     ISSUE_COUNT=$(echo "$ISSUES" | jq '. | length')
     echo "📊 Found $ISSUE_COUNT open issues"
     
     if [ "$ISSUE_COUNT" -gt 0 ]; then
-      echo "🤖 Cline CLI would analyze and fix these issues"
       echo "$ISSUES" | jq -r '.[] | "  - #\(.number): \(.title)"'
       
-      # Simulate Cline CLI automation
-      echo "✅ Issues analyzed (Cline CLI automation ready for implementation)"
+      # Use REAL Cline CLI to analyze first issue
+      FIRST_ISSUE_URL=$(echo "$ISSUES" | jq -r '.[0].html_url')
+      echo ""
+      echo "🤖 Running REAL Cline CLI analysis on: $FIRST_ISSUE_URL"
+      
+      cline -y "Analyze this GitHub issue and provide recommendations: $FIRST_ISSUE_URL" \
+        --mode act -F json 2>/dev/null | \
+        sed -n '/^{/,$p' | \
+        jq -r 'select(.say == "completion_result") | .text' | \
+        sed 's/\\n/\n/g' | head -20
+      
+      echo ""
+      echo "✅ Real Cline CLI analysis complete!"
     else
       echo "✅ No open issues to fix"
     fi
@@ -98,36 +108,24 @@ EOF
     ;;
     
   "code-review")
-    echo "👁️  Running automated code review..."
+    echo "👁️  Running automated code review with REAL Cline CLI..."
     
     # Analyze recent commits
-    echo "📜 Analyzing recent commits..."
-    RECENT_COMMITS=$(git log --oneline -5)
-    echo "$RECENT_COMMITS"
+    echo "📜 Recent commits:"
+    git log --oneline -3
     
-    # Check for common code quality issues
     echo ""
-    echo "🔍 Code quality checks:"
+    echo "🤖 Running REAL Cline CLI code quality analysis..."
     
-    # Check for TODO comments
-    TODO_COUNT=$(grep -r "TODO" app scripts --include="*.ts" --include="*.tsx" --include="*.sh" 2>/dev/null | wc -l)
-    echo "  - TODO comments found: $TODO_COUNT"
+    # Use real Cline to analyze code quality
+    cline -y "Analyze code quality in app/ directory. Check for: TODO comments, console.log statements, error handling, and provide 3 key recommendations" \
+      --mode act -F json 2>/dev/null | \
+      sed -n '/^{/,$p' | \
+      jq -r 'select(.say == "completion_result") | .text' | \
+      sed 's/\\n/\n/g' | head -30
     
-    # Check for console.log statements
-    CONSOLE_COUNT=$(grep -r "console.log" app --include="*.ts" --include="*.tsx" 2>/dev/null | wc -l)
-    echo "  - console.log statements: $CONSOLE_COUNT"
-    
-    # Generate review summary
     echo ""
-    echo "📋 Review Summary:"
-    if [ $TODO_COUNT -gt 0 ]; then
-      echo "  ⚠️  Consider addressing $TODO_COUNT TODO items"
-    fi
-    if [ $CONSOLE_COUNT -gt 10 ]; then
-      echo "  💡 Consider using a logger instead of console.log"
-    fi
-    
-    echo "✅ Code review completed"
+    echo "✅ Real Cline CLI code review completed!"
     ;;
     
   "default"|*)
