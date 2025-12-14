@@ -110,22 +110,50 @@ EOF
   "code-review")
     echo "Running automated code review with Cline CLI..."
     
-    # Analyze recent commits
-    echo "Recent commits:"
-    git log --oneline -3
+    # Check for open PRs first
+    echo "Fetching open PRs from ${REPO_OWNER}/${REPO_NAME}..."
+    PRS=$(curl -s "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/pulls?state=open&per_page=3")
     
-    echo ""
-    echo "Running Cline CLI code quality analysis..."
+    PR_COUNT=$(echo "$PRS" | jq '. | length')
+    echo "Found $PR_COUNT open PRs"
     
-    # Use real Cline to analyze code quality
-    cline -y "Analyze code quality in app/ directory. Check for: TODO comments, console.log statements, error handling, and provide 3 key recommendations" \
-      --mode act -F json 2>/dev/null | \
-      sed -n '/^{/,$p' | \
-      jq -r 'select(.say == "completion_result") | .text' | \
-      sed 's/\\n/\n/g' | head -30
-    
-    echo ""
-    echo "Cline CLI code review completed"
+    if [ "$PR_COUNT" -gt 0 ]; then
+      echo "$PRS" | jq -r '.[] | "  - #\(.number): \(.title)"'
+      
+      # Use Cline to review first PR
+      FIRST_PR_URL=$(echo "$PRS" | jq -r '.[0].html_url')
+      FIRST_PR_NUMBER=$(echo "$PRS" | jq -r '.[0].number')
+      echo ""
+      echo "Running Cline CLI review on PR #$FIRST_PR_NUMBER: $FIRST_PR_URL"
+      
+      cline -y "Review this pull request for code quality, security issues, and best practices: $FIRST_PR_URL. Provide specific recommendations." \
+        --mode act -F json 2>/dev/null | \
+        sed -n '/^{/,$p' | \
+        jq -r 'select(.say == "completion_result") | .text' | \
+        sed 's/\\n/\n/g' | head -30
+      
+      echo ""
+      echo "Cline PR review complete"
+    else
+      echo "No open PRs to review. Analyzing recent commits instead..."
+      
+      # Analyze recent commits
+      echo "Recent commits:"
+      git log --oneline -3
+      
+      echo ""
+      echo "Running Cline CLI code quality analysis..."
+      
+      # Use real Cline to analyze code quality
+      cline -y "Analyze code quality in app/ directory. Check for: TODO comments, console.log statements, error handling, and provide 3 key recommendations" \
+        --mode act -F json 2>/dev/null | \
+        sed -n '/^{/,$p' | \
+        jq -r 'select(.say == "completion_result") | .text' | \
+        sed 's/\\n/\n/g' | head -30
+      
+      echo ""
+      echo "Cline code review completed"
+    fi
     ;;
     
   "default"|*)
