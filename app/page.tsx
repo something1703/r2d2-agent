@@ -10,7 +10,7 @@ export default function Home() {
       <header className={styles.header}>
         <div className={styles.hero}>
           <h1 className={styles.title}>
-            <span className={styles.icon}>🤖</span>
+            <span className={styles.icon}></span>
             R2D2 Agent
           </h1>
           <p className={styles.subtitle}>
@@ -20,7 +20,7 @@ export default function Home() {
         <div className={styles.stats}>
           <div className={styles.stat}>
             <span className={styles.statLabel}>Status</span>
-            <span className={styles.statValue}>🟢 Active</span>
+            <span className={styles.statValue}>Active</span>
           </div>
           <div className={styles.stat}>
             <span className={styles.statLabel}>Mode</span>
@@ -41,12 +41,12 @@ export default function Home() {
         {/* Test feature for system validation */}
         <section className={styles.section}>
           <div className={styles.testFeature}>
-            <h2>🧪 System Status</h2>
+            <h2>System Status</h2>
             <ul>
-              <li>✅ Kestra orchestration active</li>
-              <li>✅ AI decision engine running</li>
-              <li>✅ CodeRabbit integration verified</li>
-              <li>✅ Automated workflows operational</li>
+              <li>Kestra orchestration active</li>
+              <li>AI decision engine running</li>
+              <li>CodeRabbit integration verified</li>
+              <li>Automated workflows operational</li>
             </ul>
           </div>
         </section>

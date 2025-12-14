@@ -113,6 +113,13 @@ export default function RepoSummary() {
 
   useEffect(() => {
     load();
+    
+    // Auto-refresh every 10 seconds to catch new Kestra results
+    const interval = setInterval(() => {
+      load();
+    }, 10000);
+    
+    return () => clearInterval(interval);
   }, [load]);
 
   const isLocked = typeof window !== 'undefined' && (window as any).__KESTRA_LOCK__;
@@ -120,7 +127,7 @@ export default function RepoSummary() {
   return (
     <div className={styles['repo-summary']}>
       <div className={styles['summary-header']}>
-        <h2>🤖 Kestra AI Summaries</h2>
+        <h2>Kestra Summaries</h2>
         <div className={styles['header-actions']}>
           <button 
             onClickCapture={trigger}
@@ -129,7 +136,7 @@ export default function RepoSummary() {
             type="button"
             style={{ pointerEvents: (triggering || isLocked) ? 'none' : 'auto' }}
           >
-            {triggering ? '⏳ Triggering...' : '▶️ Trigger Once'}
+            {triggering ? 'Triggering...' : 'Trigger'}
           </button>
           <button 
             onClick={load} 
@@ -137,7 +144,7 @@ export default function RepoSummary() {
             className={`${styles.btn} ${styles['btn-secondary']}`}
             type="button"
           >
-            {loading ? '🔄' : '🔄 Refresh'}
+            {loading ? 'Loading...' : 'Refresh'}
           </button>
         </div>
       </div>
@@ -150,7 +157,7 @@ export default function RepoSummary() {
 
       {error && (
         <div className={`${styles.alert} ${styles['alert-error']}`}>
-          ❌ {error}
+          {error}
         </div>
       )}
 
@@ -161,9 +168,9 @@ export default function RepoSummary() {
         </div>
       ) : entries.length === 0 ? (
         <div className={styles['empty-state']}>
-          <div className={styles['empty-icon']}>📭</div>
+          <div className={styles['empty-icon']}></div>
           <h3>No summaries yet</h3>
-          <p>Click "Trigger Orchestrator" to fetch GitHub activity and generate a summary</p>
+          <p>Click "Trigger" to fetch GitHub activity and generate a summary</p>
         </div>
       ) : (
         <div className={styles['summary-grid']}>

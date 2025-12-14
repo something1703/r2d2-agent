@@ -31,19 +31,19 @@ export default function IssueList() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h2>📋 GitHub Issues</h2>
+        <h2>GitHub Issues</h2>
         <button 
           onClick={load} 
           disabled={loading}
           className={styles.btn}
         >
-          {loading ? '⏳ Loading...' : '🔄 Load Issues'}
+          {loading ? 'Loading...' : 'Load Issues'}
         </button>
       </div>
 
       {error && (
         <div className={styles.error}>
-          ❌ {error}
+          {error}
         </div>
       )}
 
