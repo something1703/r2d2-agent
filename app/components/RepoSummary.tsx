@@ -15,7 +15,14 @@ export default function RepoSummary() {
   const [triggering, setTriggering] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const [isVercel, setIsVercel] = useState(false);
   const isExecuting = useRef(false);
+
+  // Detect if running on Vercel
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    setIsVercel(hostname.includes('vercel.app'));
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -129,12 +136,20 @@ export default function RepoSummary() {
       <div className={styles['summary-header']}>
         <h2>Kestra Summaries</h2>
         <div className={styles['header-actions']}>
+          {isVercel && (
+            <div className={styles['vercel-notice']}>
+              <small style={{ color: '#666', marginRight: '10px' }}>
+                Viewing on Vercel (triggers disabled)
+              </small>
+            </div>
+          )}
           <button 
             onClickCapture={trigger}
-            disabled={triggering || isLocked}
+            disabled={triggering || isLocked || isVercel}
             className={`${styles.btn} ${styles['btn-primary']}`}
             type="button"
-            style={{ pointerEvents: (triggering || isLocked) ? 'none' : 'auto' }}
+            style={{ pointerEvents: (triggering || isLocked || isVercel) ? 'none' : 'auto' }}
+            title={isVercel ? 'Triggers only work on localhost' : 'Trigger Kestra workflow'}
           >
             {triggering ? 'Triggering...' : 'Trigger'}
           </button>

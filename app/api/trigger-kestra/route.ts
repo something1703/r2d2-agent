@@ -4,6 +4,7 @@ import { ApiResponse } from '@/types';
 const KESTRA_BASE = process.env.KESTRA_BASE || 'http://127.0.0.1:8080';
 const KES_USER = process.env.KES_USER || 'rudra@example.com';
 const KES_PASS = process.env.KES_PASS || 'Kestra123';
+const IS_VERCEL = process.env.VERCEL === '1';
 
 // Global lock and rate limiting
 let EXECUTION_IN_PROGRESS = false;
@@ -12,6 +13,18 @@ const RATE_LIMIT_MS = 30000; // 30 seconds
 
 export async function POST() {
   try {
+    // Check if running on Vercel - can't reach localhost Kestra
+    if (IS_VERCEL) {
+      console.warn('Running on Vercel - cannot trigger localhost Kestra');
+      return NextResponse.json(
+        {
+          ok: false,
+          error: 'Workflow triggers only work on localhost. Vercel cannot reach your local Kestra instance. View the dashboard to see historical executions from your local setup.',
+        } as ApiResponse,
+        { status: 503 }
+      );
+    }
+
     // IMMEDIATE LOCK CHECK - Reject if already running
     if (EXECUTION_IN_PROGRESS) {
       console.warn('Execution already in progress, rejecting request');
