@@ -1,5 +1,35 @@
 [
   {
+    "id": "1765695127919",
+    "createdAt": "2025-12-14T06:52:07.919Z",
+    "summary": {
+      "repo": "something1703/r2d2-agent",
+      "health_score": 70,
+      "metrics": {
+        "open_issues": 6,
+        "open_prs": 6,
+        "recent_commits": 18,
+        "days_since_update": 0,
+        "stars": 0,
+        "forks": 0
+      },
+      "issue_titles": [
+        "✨ Enhancement",
+        "🤖 CodeRabbit Demo",
+        "feat/kestra integration final",
+        "chore: add live demo URL",
+        "chore: README tweak"
+      ],
+      "decision": {
+        "action": "fix-issues",
+        "priority": "medium",
+        "reasoning": "6 open issues detected - gradual resolution recommended",
+        "timestamp": "2025-12-14T06:52:07.899Z"
+      },
+      "analyzed_at": "2025-12-14T06:52:07.900Z"
+    }
+  },
+  {
     "id": "1765636853960",
     "createdAt": "2025-12-13T14:40:53.960Z",
     "summary": {
