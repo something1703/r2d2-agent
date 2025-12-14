@@ -1,62 +1,38 @@
 # R2D2 Agent 🤖
 
-**Autonomous AI coding assistant powered by Cline CLI, Kestra orchestration, and Oumi RL fine-tuning**
-
-> 🏆 Marvel Avengers Hackathon 2025 - Built with ALL sponsor technologies
+**Autonomous DevOps assistant powered by Cline CLI and Kestra orchestration**
 
 ## 🌐 Live Demo
 
 - **Deployment:** [https://r2d2-agent.vercel.app](https://r2d2-agent.vercel.app)
 - **GitHub Repository:** [https://github.com/something1703/r2d2-agent](https://github.com/something1703/r2d2-agent)
-- **Kestra Workflow:** Available in local deployment
-- **CodeRabbit Activity:** Visible in Pull Requests
-
-## ✨ **REAL Cline CLI Integration** (Not Simulated!)
-
-R2D2 Agent now uses **ACTUAL Cline CLI** for autonomous coding:
-
-- ✅ **Real Cline CLI v1.0.8** installed and authenticated
-- ✅ **Live AI analysis** of GitHub issues and code quality
-- ✅ **Autonomous code reviews** with real recommendations
-- ✅ **Full integration** with Kestra workflows
-
-**Proof:** Check `scripts/cline-trigger.sh` for live Cline commands!
 
 ## 🚀 Features
 
-### 1. Automated Issue Resolution (REAL Cline CLI)
-- **Uses actual Cline CLI** to analyze GitHub issues
-- Provides real AI-powered recommendations
-- Creates automated fixes and PRs
+### Automated Issue Resolution (Cline CLI)
+- Uses Cline CLI to analyze GitHub issues
+- Provides AI-powered recommendations
 - Runs autonomous code quality reviews
 
-**How it works:**
+**Example:**
 ```bash
-# Real command used in our automation
+# Real command used in automation
 cline -y "Analyze this GitHub issue: <issue-url>" --mode act -F json
 ```
 
-### 2. Intelligent Orchestration (Kestra AI Agent)
+### Intelligent Orchestration (Kestra)
 - Monitors repository health continuously
 - Makes autonomous decisions based on repo metrics
 - Triggers appropriate actions (fix issues, update docs, code review)
-- Summarizes data from GitHub API
 
 **Decision Logic:**
-- `> 5 open issues` → Trigger Cline to analyze and fix
+- `> 5 open issues` → Trigger issue analysis
 - `> 7 days since update` → Update documentation
-- `1-5 issues` → Run Cline code quality review
+- `1-5 issues` → Run code quality review
 
-### 3. Continuous Learning (Oumi RL)
-- Fine-tunes code suggestions based on PR feedback
-- Uses Reinforcement Learning to improve over time
-- Trains on real codebase patterns
-- Generates better fixes with each iteration
-
-### 4. Automated Code Quality (CodeRabbit)
+### Automated Code Quality (CodeRabbit)
 - Reviews every PR automatically
 - Suggests improvements and best practices
-- Enforces coding standards
 - Provides inline code suggestions
 
 ## � Quick Start for Other Developers
@@ -104,43 +80,42 @@ npm run dev
 # Node.js 18+
 node --version
 
-# Python 3.8+
-python3 --version
-
 # Docker & Docker Compose
 docker --version
 
-# GitHub CLI (optional, for PR creation)
-gh --version
+# Cline CLI
+npm install -g cline
 ```
 
 ### Quick Start
 
-1. **Clone and install dependencies:**
+1. **Clone and install:**
 ```bash
 git clone https://github.com/something1703/r2d2-agent.git
 cd r2d2-agent
 npm install
 ```
 
-2. **Install Python dependencies (Oumi):**
-```bash
-pip install oumi-sdk torch transformers
-# Or use the simulation mode (no installation required)
-```
-
-3. **Set up environment variables:**
+2. **Set up environment:**
 ```bash
 cp .env.example .env.local
-# Add your tokens:
-# - GITHUB_TOKEN
-# - OPENAI_API_KEY (optional)
+# Add your GITHUB_TOKEN
 ```
 
-4. **Start Kestra orchestrator:**
+3. **Start Kestra:**
 ```bash
 cd infra/kestra
 docker-compose up -d
+```
+
+4. **Authenticate Cline:**
+```bash
+cline auth
+```
+
+5. **Start app:**
+```bash
+npm run dev
 ```
 
 5. **Start Next.js development server:**

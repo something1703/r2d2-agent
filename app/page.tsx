@@ -54,11 +54,9 @@ export default function Home() {
 
       <footer className={styles.footer}>
         <p>
-          Built for DevOps AI Hackathon • 
-          <a href="https://kestra.io" target="_blank" rel="noopener noreferrer"> Kestra</a> • 
-          <a href="https://github.com/cline/cline" target="_blank" rel="noopener noreferrer"> Cline</a> • 
-          <a href="https://vercel.com" target="_blank" rel="noopener noreferrer"> Vercel</a> •
-          <a href="https://www.oumi.ai" target="_blank" rel="noopener noreferrer"> Oumi</a>
+          <a href="https://kestra.io" target="_blank" rel="noopener noreferrer">Kestra</a> • 
+          <a href="https://github.com/cline/cline" target="_blank" rel="noopener noreferrer">Cline</a> • 
+          <a href="https://vercel.com" target="_blank" rel="noopener noreferrer">Vercel</a>
         </p>
         <p>
           <a href="https://github.com/something1703/r2d2-agent" target="_blank" rel="noopener noreferrer">
@@ -66,7 +64,7 @@ export default function Home() {
           </a>
         </p>
         <p style={{ marginTop: '10px', fontSize: '11px', opacity: 0.5 }}>
-          Powered by Real Cline CLI • Automated with Kestra • Reviewed by CodeRabbit
+          Autonomous DevOps Assistant
         </p>
       </footer>
     </div>
