@@ -24,7 +24,7 @@ tasks:
             'User-Agent': 'kestra-r2d2-agent' 
           };
 
-          console.log('🔍 Fetching repository metrics...');
+          console.log('Fetching repository metrics...');
 
           // Fetch repository metadata
           const repoRes = await fetch('https://api.github.com/repos/something1703/r2d2-agent', { headers });
@@ -55,7 +55,7 @@ tasks:
           );
           const commits = commitsRes.ok ? await commitsRes.json() : [];
 
-          console.log('📊 Repository metrics collected');
+          console.log('Repository metrics collected');
 
           // Calculate repository health score (0-100)
           let healthScore = 100;
@@ -131,7 +131,7 @@ tasks:
           };
 
           console.log('═══════════════════════════════════════');
-          console.log('📊 REPOSITORY HEALTH ANALYSIS');
+          console.log('REPOSITORY HEALTH ANALYSIS');
           console.log('═══════════════════════════════════════');
           console.log('Health Score:', healthScore + '/100');
           console.log('Open Issues:', issues_count);
@@ -139,7 +139,7 @@ tasks:
           console.log('Recent Commits (7d):', commits_count);
           console.log('Days Since Update:', daysSinceUpdate);
           console.log('───────────────────────────────────────');
-          console.log('🤖 AI DECISION:');
+          console.log('AI DECISION:');
           console.log('Action:', action);
           console.log('Priority:', priority);
           console.log('Reasoning:', reasoning);
@@ -156,7 +156,7 @@ tasks:
             });
             
             if (summaryRes.ok) {
-              console.log('✅ Summary posted to Next.js API');
+              console.log('Summary posted to Next.js API');
             } else {
               console.log('⚠️  Summary POST failed:', summaryRes.status);
             }
@@ -176,7 +176,7 @@ tasks:
               });
               
               if (actionRes.ok) {
-                console.log(`✅ Triggered action: ${action}`);
+                console.log(`Triggered action: ${action}`);
               } else {
                 console.log(`⚠️  Action trigger failed: ${actionRes.status}`);
               }
@@ -185,10 +185,10 @@ tasks:
             }
           }
 
-          console.log('✅ WORKFLOW COMPLETED SUCCESSFULLY');
+          console.log('WORKFLOW COMPLETED SUCCESSFULLY');
 
         } catch (e) {
-          console.error('❌ WORKFLOW ERROR:', e && e.stack ? e.stack : e);
+          console.error('WORKFLOW ERROR:', e && e.stack ? e.stack : e);
           process.exit(1);
         }
       })();

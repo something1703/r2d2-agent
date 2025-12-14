@@ -14,7 +14,7 @@ export async function POST() {
   try {
     // IMMEDIATE LOCK CHECK - Reject if already running
     if (EXECUTION_IN_PROGRESS) {
-      console.warn('🚫 Execution already in progress, rejecting request');
+      console.warn('Execution already in progress, rejecting request');
       return NextResponse.json(
         { 
           ok: false, 
@@ -40,8 +40,8 @@ export async function POST() {
 
     // SET LOCK IMMEDIATELY
     EXECUTION_IN_PROGRESS = true;
-    console.log('🔒 Execution lock acquired');
-    console.log('🔄 Triggering Kestra flow: agent-orchestrator-script');
+    console.log('Execution lock acquired');
+    console.log('Triggering Kestra flow: agent-orchestrator-script');
 
     const resp = await fetch(
       `${KESTRA_BASE}/api/v1/main/executions/default/agent-orchestrator-script`,
@@ -73,7 +73,7 @@ export async function POST() {
 
     // Update last trigger time AFTER successful trigger
     lastTriggerTime = now;
-    console.log('✅ Kestra flow triggered successfully');
+    console.log('Kestra flow triggered successfully');
 
     return NextResponse.json({
       ok: true,
@@ -81,7 +81,7 @@ export async function POST() {
       triggeredAt: new Date().toISOString(),
     } as ApiResponse);
   } catch (err: any) {
-    console.error('❌ trigger-kestra error:', err);
+    console.error('trigger-kestra error:', err);
     return NextResponse.json(
       { ok: false, error: err.message || String(err) } as ApiResponse,
       { status: 500 }
@@ -90,7 +90,7 @@ export async function POST() {
     // ALWAYS release lock after 5 seconds
     setTimeout(() => {
       EXECUTION_IN_PROGRESS = false;
-      console.log('🔓 Execution lock released');
+      console.log('Execution lock released');
     }, 5000);
   }
 }

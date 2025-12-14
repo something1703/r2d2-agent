@@ -31,7 +31,7 @@ export async function GET() {
       count: cleaned.length 
     } as ApiResponse<typeof cleaned>);
   } catch (e: any) {
-    console.error('❌ GitHub API error:', e.message);
+    console.error('GitHub API error:', e.message);
     return NextResponse.json(
       { ok: false, error: e.message } as ApiResponse,
       { status: 500 }

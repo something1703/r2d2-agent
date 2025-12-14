@@ -43,12 +43,12 @@ export default function RepoSummary() {
     
     // Multi-layer lock check
     if (isExecuting.current) {
-      console.warn('🚫 Component lock active');
+      console.warn('Component lock active');
       return;
     }
     
     if (typeof window !== 'undefined' && (window as any).__KESTRA_LOCK__) {
-      console.warn('🚫 Global window lock active');
+      console.warn('Global window lock active');
       setError('Execution already in progress, please wait');
       return;
     }
@@ -73,7 +73,7 @@ export default function RepoSummary() {
     setError(null);
     
     try {
-      console.log('🚀 Triggering Kestra...');
+      console.log('Triggering Kestra...');
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -91,14 +91,14 @@ export default function RepoSummary() {
         throw new Error(json.error || 'Failed');
       }
       
-      console.log('✅ Success');
+      console.log('Success');
       if (typeof window !== 'undefined') {
         (window as any).__LAST_TRIGGER__ = now;
       }
       
       setTimeout(() => load(), 4000);
     } catch (e: any) {
-      console.error('❌ Error:', e);
+      console.error('Error:', e);
       setError(e.message);
     } finally {
       setTriggering(false);
@@ -178,7 +178,7 @@ export default function RepoSummary() {
             <div key={entry.id} className={styles['summary-card']}>
               <div className={styles['card-header']}>
                 <span className={styles['card-date']}>
-                  📅 {new Date(entry.createdAt).toLocaleString()}
+                  {new Date(entry.createdAt).toLocaleString()}
                 </span>
                 <span className={styles['card-badge']}>ID: {entry.id}</span>
               </div>
@@ -186,7 +186,7 @@ export default function RepoSummary() {
               <div className={styles['card-body']}>
                 {entry.summary.repositoryName && (
                   <div className={styles['summary-item']}>
-                    <strong>📦 Repository:</strong> {entry.summary.repositoryName}
+                    <strong>Repository:</strong> {entry.summary.repositoryName}
                   </div>
                 )}
                 
@@ -209,14 +209,14 @@ export default function RepoSummary() {
 
                 {entry.summary.aiSummary && (
                   <div className={styles['summary-item']}>
-                    <strong>🤖 AI Summary:</strong>
+                    <strong>AI Summary:</strong>
                     <p>{entry.summary.aiSummary}</p>
                   </div>
                 )}
 
                 {entry.summary.recommendations && entry.summary.recommendations.length > 0 && (
                   <div className={styles['summary-item']}>
-                    <strong>💡 Recommendations:</strong>
+                    <strong>Recommendations:</strong>
                     <ul>
                       {entry.summary.recommendations.map((rec, idx) => (
                         <li key={idx}>{rec}</li>
@@ -227,7 +227,7 @@ export default function RepoSummary() {
 
                 {entry.summary.recentActivity && (
                   <div className={styles['summary-item']}>
-                    <strong>⚡ Recent Activity:</strong>
+                    <strong>Recent Activity:</strong>
                     <p>{entry.summary.recentActivity}</p>
                   </div>
                 )}

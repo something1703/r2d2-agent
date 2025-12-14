@@ -14,8 +14,8 @@
         "forks": 0
       },
       "issue_titles": [
-        "✨ Enhancement",
-        "🤖 CodeRabbit Demo",
+        "Enhancement",
+        "CodeRabbit Demo",
         "feat/kestra integration final",
         "chore: add live demo URL",
         "chore: README tweak"
@@ -44,9 +44,9 @@
         "forks": 0
       },
       "issue_titles": [
-        "🧪 Test PR: System Validation",
-        "✨ Enhancement",
-        "🤖 CodeRabbit Demo",
+        "Test PR: System Validation",
+        "Enhancement",
+        "CodeRabbit Demo",
         "feat/kestra integration final",
         "chore: add live demo URL"
       ],
@@ -65,7 +65,7 @@
     "summary": {
       "count": 5,
       "titles": [
-        "🤖 CodeRabbit Demo",
+        "CodeRabbit Demo",
         "feat/kestra integration final",
         "chore: add live demo URL",
         "chore: README tweak",

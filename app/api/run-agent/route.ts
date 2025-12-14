@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { action = 'default', params = {} } = body;
 
-    console.log(`🤖 Triggering Cline automation: ${action}`);
+    console.log(`Triggering Cline automation: ${action}`);
 
     // Skip script execution on Vercel (serverless environment)
     if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
       timeout: 30000, // 30 second timeout
     });
 
-    console.log('✅ Cline automation completed');
+    console.log('Cline automation completed');
     
     return NextResponse.json({
       ok: true,
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       },
     } as ApiResponse);
   } catch (err: any) {
-    console.error('❌ run-agent error:', err);
+    console.error('run-agent error:', err);
     return NextResponse.json(
       {
         ok: false,
