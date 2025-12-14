@@ -169,14 +169,29 @@ tasks:
             try {
               // Use 172.17.0.1 for Linux (Docker bridge gateway)
               const host = process.env.NEXT_HOST || '172.17.0.1';
+              
+              // Prepare payload with all context for Cline
+              const payload = {
+                action: action,
+                priority: priority,
+                context: {
+                  healthScore: healthScore,
+                  openIssues: issuesCount,
+                  openPRs: prsCount,
+                  reasoning: reasoning
+                }
+              };
+              
               const actionRes = await fetch(`http://${host}:3000/api/run-agent`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: action, priority: priority })
+                body: JSON.stringify(payload)
               });
               
               if (actionRes.ok) {
                 console.log(`Triggered action: ${action}`);
+                const result = await actionRes.json();
+                console.log('Action result:', result.ok ? 'Success' : 'Failed');
               } else {
                 console.log(`⚠️  Action trigger failed: ${actionRes.status}`);
               }

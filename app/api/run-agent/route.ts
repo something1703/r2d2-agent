@@ -30,14 +30,17 @@ export async function POST(request: Request) {
 
     const scriptPath = path.resolve(process.cwd(), 'scripts', 'cline-trigger.sh');
     
-    // Run the Cline trigger script
+    // Run the Cline trigger script with proper environment
     const { stdout, stderr } = await execAsync(`bash ${scriptPath}`, {
       env: {
         ...process.env,
         ACTION: action,
         PARAMS: JSON.stringify(params),
+        REPO_OWNER: process.env.GITHUB_REPO_OWNER || 'something1703',
+        REPO_NAME: process.env.GITHUB_REPO_NAME || 'r2d2-agent',
       },
-      timeout: 30000, // 30 second timeout
+      timeout: 60000, // 60 second timeout for Cline operations
+      maxBuffer: 1024 * 1024, // 1MB buffer for output
     });
 
     console.log('Cline automation completed');

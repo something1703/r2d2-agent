@@ -2,13 +2,14 @@
 # R2D2 Agent - Cline CLI Automation Script
 # This script is triggered by the /api/run-agent endpoint
 
-set -e
+set -euo pipefail  # Exit on error, undefined vars, and pipe failures
 
 echo "=========================================="
 echo "R2D2 Cline Automation Started"
 echo "=========================================="
 echo "Timestamp: $(date)"
 echo "Action: ${ACTION:-default}"
+echo "Repository: ${REPO_OWNER}/${REPO_NAME}"
 echo "------------------------------------------"
 
 # Get action from environment variable (set by API)
@@ -18,6 +19,10 @@ PARAMS="${PARAMS:-{}}"
 # Parse the repo owner and name from environment or use defaults
 REPO_OWNER="${REPO_OWNER:-something1703}"
 REPO_NAME="${REPO_NAME:-r2d2-agent}"
+
+# Check if required commands exist
+command -v jq >/dev/null 2>&1 || { echo "Error: jq is required but not installed"; exit 1; }
+command -v curl >/dev/null 2>&1 || { echo "Error: curl is required but not installed"; exit 1; }
 
 case "$ACTION" in
   "trigger-kestra")
@@ -62,16 +67,19 @@ case "$ACTION" in
     if [ "$ISSUE_COUNT" -gt 0 ]; then
       echo "$ISSUES" | jq -r '.[] | "  - #\(.number): \(.title)"'
       
-      # Use REAL Cline CLI to analyze first issue
+      # Use Cline CLI to analyze first issue
       FIRST_ISSUE_URL=$(echo "$ISSUES" | jq -r '.[0].html_url')
+      FIRST_ISSUE_TITLE=$(echo "$ISSUES" | jq -r '.[0].title')
       echo ""
-      echo "Running Cline CLI analysis on: $FIRST_ISSUE_URL"
+      echo "Running Cline CLI analysis on: #$(echo "$ISSUES" | jq -r '.[0].number') - $FIRST_ISSUE_TITLE"
       
-      cline -y "Analyze this GitHub issue and provide recommendations: $FIRST_ISSUE_URL" \
-        --mode act -F json 2>/dev/null | \
+      # Efficient Cline prompt - concise and specific
+      cline -y "Analyze GitHub issue '$FIRST_ISSUE_TITLE' at $FIRST_ISSUE_URL. Provide: 1) Root cause 2) Fix approach 3) Priority. Be concise." \
+        --mode act \
+        --output-format json 2>/dev/null | \
         sed -n '/^{/,$p' | \
         jq -r 'select(.say == "completion_result") | .text' | \
-        sed 's/\\n/\n/g' | head -20
+        sed 's/\\n/\n/g' | head -15
       
       echo ""
       echo "Cline CLI analysis complete"
@@ -123,14 +131,17 @@ EOF
       # Use Cline to review first PR
       FIRST_PR_URL=$(echo "$PRS" | jq -r '.[0].html_url')
       FIRST_PR_NUMBER=$(echo "$PRS" | jq -r '.[0].number')
+      FIRST_PR_TITLE=$(echo "$PRS" | jq -r '.[0].title')
       echo ""
-      echo "Running Cline CLI review on PR #$FIRST_PR_NUMBER: $FIRST_PR_URL"
+      echo "Running Cline CLI review on PR #$FIRST_PR_NUMBER: $FIRST_PR_TITLE"
       
-      cline -y "Review this pull request for code quality, security issues, and best practices: $FIRST_PR_URL. Provide specific recommendations." \
-        --mode act -F json 2>/dev/null | \
+      # Efficient PR review prompt - focused on key areas
+      cline -y "Code review for PR #$FIRST_PR_NUMBER '$FIRST_PR_TITLE' at $FIRST_PR_URL. Check: 1) Security issues 2) Code quality 3) Best practices. List top 3 concerns only." \
+        --mode act \
+        --output-format json 2>/dev/null | \
         sed -n '/^{/,$p' | \
         jq -r 'select(.say == "completion_result") | .text' | \
-        sed 's/\\n/\n/g' | head -30
+        sed 's/\\n/\n/g' | head -25
       
       echo ""
       echo "Cline PR review complete"
@@ -144,12 +155,13 @@ EOF
       echo ""
       echo "Running Cline CLI code quality analysis..."
       
-      # Use real Cline to analyze code quality
-      cline -y "Analyze code quality in app/ directory. Check for: TODO comments, console.log statements, error handling, and provide 3 key recommendations" \
-        --mode act -F json 2>/dev/null | \
+      # Efficient code quality analysis - targeted scan
+      cline -y "Scan app/ directory for code quality issues. Report: 1) TODO/FIXME count 2) console.log usage 3) Missing error handling. Give 3 specific fixes." \
+        --mode act \
+        --output-format json 2>/dev/null | \
         sed -n '/^{/,$p' | \
         jq -r 'select(.say == "completion_result") | .text' | \
-        sed 's/\\n/\n/g' | head -30
+        sed 's/\\n/\n/g' | head -20
       
       echo ""
       echo "Cline code review completed"

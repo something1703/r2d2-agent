@@ -1,5 +1,138 @@
 [
   {
+    "id": "1765719702244",
+    "createdAt": "2025-12-14T13:41:42.244Z",
+    "summary": {
+      "repo": "something1703/r2d2-agent",
+      "health_score": 100,
+      "metrics": {
+        "open_issues": 2,
+        "open_prs": 2,
+        "recent_commits": 27,
+        "days_since_update": 0,
+        "stars": 0,
+        "forks": 0
+      },
+      "issue_titles": [
+        "Add user authentication service",
+        "Add data processing utilities"
+      ],
+      "decision": {
+        "action": "code-review",
+        "priority": "low",
+        "reasoning": "Recent activity detected - running quality check",
+        "timestamp": "2025-12-14T13:41:42.211Z"
+      },
+      "analyzed_at": "2025-12-14T13:41:42.211Z"
+    }
+  },
+  {
+    "id": "1765719132238",
+    "createdAt": "2025-12-14T13:32:12.238Z",
+    "summary": {
+      "repo": "something1703/r2d2-agent",
+      "health_score": 100,
+      "metrics": {
+        "open_issues": 2,
+        "open_prs": 2,
+        "recent_commits": 27,
+        "days_since_update": 0,
+        "stars": 0,
+        "forks": 0
+      },
+      "issue_titles": [
+        "Add user authentication service",
+        "Add data processing utilities"
+      ],
+      "decision": {
+        "action": "code-review",
+        "priority": "low",
+        "reasoning": "Recent activity detected - running quality check",
+        "timestamp": "2025-12-14T13:32:12.161Z"
+      },
+      "analyzed_at": "2025-12-14T13:32:12.161Z"
+    }
+  },
+  {
+    "id": "1765718094739",
+    "createdAt": "2025-12-14T13:14:54.739Z",
+    "summary": {
+      "repo": "something1703/r2d2-agent",
+      "health_score": 100,
+      "metrics": {
+        "open_issues": 2,
+        "open_prs": 2,
+        "recent_commits": 27,
+        "days_since_update": 0,
+        "stars": 0,
+        "forks": 0
+      },
+      "issue_titles": [
+        "Add user authentication service",
+        "Add data processing utilities"
+      ],
+      "decision": {
+        "action": "code-review",
+        "priority": "low",
+        "reasoning": "Recent activity detected - running quality check",
+        "timestamp": "2025-12-14T13:14:54.702Z"
+      },
+      "analyzed_at": "2025-12-14T13:14:54.703Z"
+    }
+  },
+  {
+    "id": "1765713606372",
+    "createdAt": "2025-12-14T12:00:06.372Z",
+    "summary": {
+      "repo": "something1703/r2d2-agent",
+      "health_score": 100,
+      "metrics": {
+        "open_issues": 1,
+        "open_prs": 1,
+        "recent_commits": 27,
+        "days_since_update": 0,
+        "stars": 0,
+        "forks": 0
+      },
+      "issue_titles": [
+        "Add data processing utilities"
+      ],
+      "decision": {
+        "action": "code-review",
+        "priority": "low",
+        "reasoning": "Recent activity detected - running quality check",
+        "timestamp": "2025-12-14T12:00:06.349Z"
+      },
+      "analyzed_at": "2025-12-14T12:00:06.349Z"
+    }
+  },
+  {
+    "id": "1765711028253",
+    "createdAt": "2025-12-14T11:17:08.253Z",
+    "summary": {
+      "repo": "something1703/r2d2-agent",
+      "health_score": 100,
+      "metrics": {
+        "open_issues": 1,
+        "open_prs": 1,
+        "recent_commits": 24,
+        "days_since_update": 0,
+        "stars": 0,
+        "forks": 0
+      },
+      "issue_titles": [
+        "Add data processing utilities"
+      ],
+      "decision": {
+        "action": "code-review",
+        "priority": "low",
+        "reasoning": "Recent activity detected - running quality check",
+        "timestamp": "2025-12-14T11:17:08.238Z"
+      },
+      "analyzed_at": "2025-12-14T11:17:08.238Z"
+    }
+  },
+  {
     "id": "1765695127919",
     "createdAt": "2025-12-14T06:52:07.919Z",
     "summary": {
