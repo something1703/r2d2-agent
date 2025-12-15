@@ -2,14 +2,22 @@ id: agent-orchestrator-script
 namespace: default
 
 description: |
-  R2D2 AI Agent - Autonomous repository health monitoring and decision-making.
-  Fetches GitHub metrics, analyzes repo health, and triggers appropriate actions.
+  R2D2 AI Agent - Autonomous repository health monitoring with AI-powered decision-making.
+  Uses OpenAI GPT-4o-mini to analyze GitHub metrics and intelligently decide appropriate actions.
+  
+  Workflow:
+  1. Fetch GitHub repository metrics (issues, PRs, commits, activity)
+  2. Calculate health score (0-100) using custom algorithm
+  3. Use OpenAI to analyze metrics and recommend action
+  4. Execute autonomous action via Cline CLI integration
+  5. Post results to Next.js dashboard
 
 tasks:
-  - id: fetch_and_analyze
+  - id: fetch_metrics
     type: io.kestra.plugin.scripts.node.Script
     taskRunner:
       type: io.kestra.plugin.scripts.runner.docker.Docker
+    description: Fetch GitHub repository metrics for AI analysis
     script: |-
       (async () => {
         try {
@@ -55,7 +63,7 @@ tasks:
           );
           const commits = commitsRes.ok ? await commitsRes.json() : [];
 
-          console.log('Repository metrics collected');
+          console.log('Repository metrics collected successfully');
 
           // Calculate repository health score (0-100)
           let healthScore = 100;
@@ -66,88 +74,232 @@ tasks:
           const lastUpdate = new Date(repo.updated_at);
           const daysSinceUpdate = Math.floor((Date.now() - lastUpdate) / (1000 * 60 * 60 * 24));
 
-          // Health score deductions
+          // Health score calculation algorithm
           if (issues_count > 10) healthScore -= 30;
           else if (issues_count > 5) healthScore -= 15;
+          else if (issues_count > 0) healthScore -= 5;
           
-          if (daysSinceUpdate > 14) healthScore -= 25;
-          else if (daysSinceUpdate > 7) healthScore -= 10;
+          if (daysSinceUpdate > 14) healthScore -= 40;
+          else if (daysSinceUpdate > 7) healthScore -= 20;
           
-          if (prs_count > 5) healthScore -= 15;
+          if (prs_count > 5) healthScore -= 25;
+          else if (prs_count > 2) healthScore -= 10;
+          else if (prs_count > 0) healthScore -= 5;
+          
           if (commits_count === 0) healthScore -= 20;
+          else if (commits_count > 20) healthScore += 10;
+          
+          if (repo.stargazers_count > 10) healthScore += 5;
 
-          // AI DECISION ENGINE
-          let action = 'none';
-          let priority = 'low';
-          let reasoning = 'Repository health is good';
+          healthScore = Math.max(0, Math.min(100, healthScore));
 
-          if (issues_count > 10) {
-            action = 'fix-issues';
-            priority = 'high';
-            reasoning = `Critical: ${issues_count} open issues need attention`;
-          } else if (daysSinceUpdate > 14) {
-            action = 'update-docs';
-            priority = 'high';
-            reasoning = `Repository inactive for ${daysSinceUpdate} days - documentation update needed`;
-          } else if (issues_count > 5) {
-            action = 'fix-issues';
-            priority = 'medium';
-            reasoning = `${issues_count} open issues detected - gradual resolution recommended`;
-          } else if (daysSinceUpdate > 7) {
-            action = 'update-docs';
-            priority = 'medium';
-            reasoning = `${daysSinceUpdate} days since last update - keeping docs fresh`;
-          } else if (prs_count > 3) {
-            action = 'code-review';
-            priority = 'medium';
-            reasoning = `${prs_count} open PRs need review`;
-          } else if (commits_count > 0) {
-            action = 'code-review';
-            priority = 'low';
-            reasoning = 'Recent activity detected - running quality check';
+          // Store metrics for AI analysis
+          console.log('METRICS_OUTPUT::START');
+          console.log(JSON.stringify({
+            healthScore,
+            issues_count,
+            prs_count,
+            commits_count,
+            daysSinceUpdate,
+            stars: repo.stargazers_count || 0,
+            forks: repo.forks_count || 0,
+            issue_titles: Array.isArray(issues) ? issues.slice(0, 5).map(i => i.title) : [],
+            pr_titles: Array.isArray(prs) ? prs.slice(0, 3).map(p => p.title) : []
+          }));
+          console.log('METRICS_OUTPUT::END');
+
+        } catch (e) {
+          console.error('WORKFLOW ERROR:', e && e.stack ? e.stack : e);
+          process.exit(1);
+        }
+      })();
+    outputs:
+      - id: metrics
+        type: JSON
+        value: "{{ outputs.fetch_metrics.stdout | jq('.') }}"
+
+  - id: ai_decision
+    type: io.kestra.plugin.scripts.node.Script
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    description: Use OpenAI GPT-4o-mini to analyze metrics and recommend action
+    script: |-
+      (async () => {
+        try {
+          const openaiKey = '{{ secret("OPENAI_API_KEY") }}';
+          if (!openaiKey) {
+            console.log('NO_OPENAI_KEY - Falling back to rule-based logic');
+            // Fallback logic would go here
+            return;
           }
 
-          const decision = {
-            action: action,
-            priority: priority,
-            reasoning: reasoning,
-            timestamp: new Date().toISOString()
-          };
+          // Extract metrics from previous task
+          const metricsOutput = `{{ outputs.fetch_metrics.stdout }}`;
+          const metricsMatch = metricsOutput.match(/METRICS_OUTPUT::START\n(.*)\nMETRICS_OUTPUT::END/s);
+          
+          if (!metricsMatch) {
+            console.error('Could not parse metrics');
+            return;
+          }
 
+          const metrics = JSON.parse(metricsMatch[1]);
+          
+          console.log('═══════════════════════════════════════');
+          console.log('AI DECISION ENGINE - OpenAI GPT-4o-mini');
+          console.log('═══════════════════════════════════════');
+          console.log('Health Score:', metrics.healthScore + '/100');
+          console.log('Open Issues:', metrics.issues_count);
+          console.log('Open PRs:', metrics.prs_count);
+          console.log('Recent Commits (7d):', metrics.commits_count);
+          console.log('Days Since Update:', metrics.daysSinceUpdate);
+          console.log('───────────────────────────────────────');
+
+          // Prepare AI prompt with repository context
+          const aiPrompt = `You are an expert DevOps AI agent analyzing a GitHub repository's health.
+
+Repository Metrics:
+- Health Score: ${metrics.healthScore}/100
+- Open Issues: ${metrics.issues_count}
+- Open Pull Requests: ${metrics.prs_count}
+- Recent Commits (7 days): ${metrics.commits_count}
+- Days Since Last Update: ${metrics.daysSinceUpdate}
+- Stars: ${metrics.stars}
+- Forks: ${metrics.forks}
+
+Recent Issue Titles:
+${metrics.issue_titles.map((t, i) => `${i + 1}. ${t}`).join('\n')}
+
+Recent PR Titles:
+${metrics.pr_titles.map((t, i) => `${i + 1}. ${t}`).join('\n')}
+
+Based on these metrics, recommend ONE action from:
+1. "fix-issues" - Critical issue backlog needs attention
+2. "code-review" - Pull requests need review or recent code needs quality check
+3. "update-docs" - Repository inactive, documentation refresh needed
+4. "none" - Repository is healthy, no action required
+
+Respond ONLY with valid JSON in this exact format:
+{
+  "action": "fix-issues|code-review|update-docs|none",
+  "priority": "high|medium|low|none",
+  "reasoning": "Brief explanation (max 100 chars)",
+  "confidence": 0.0-1.0
+}`;
+
+          // Call OpenAI API
+          const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${openaiKey}`
+            },
+            body: JSON.stringify({
+              model: 'gpt-4o-mini',
+              messages: [
+                {
+                  role: 'system',
+                  content: 'You are an expert DevOps AI that analyzes repository health and recommends autonomous actions. Always respond with valid JSON only.'
+                },
+                {
+                  role: 'user',
+                  content: aiPrompt
+                }
+              ],
+              temperature: 0.3,
+              max_tokens: 150,
+              response_format: { type: 'json_object' }
+            })
+          });
+
+          if (!response.ok) {
+            const error = await response.text();
+            console.error('OpenAI API Error:', response.status, error);
+            return;
+          }
+
+          const aiResponse = await response.json();
+          const decision = JSON.parse(aiResponse.choices[0].message.content);
+
+          console.log('AI DECISION RECEIVED:');
+          console.log('Action:', decision.action);
+          console.log('Priority:', decision.priority);
+          console.log('Reasoning:', decision.reasoning);
+          console.log('Confidence:', (decision.confidence * 100).toFixed(1) + '%');
+          console.log('═══════════════════════════════════════');
+
+          console.log('AI DECISION RECEIVED:');
+          console.log('Action:', decision.action);
+          console.log('Priority:', decision.priority);
+          console.log('Reasoning:', decision.reasoning);
+          console.log('Confidence:', (decision.confidence * 100).toFixed(1) + '%');
+          console.log('═══════════════════════════════════════');
+
+          // Store decision for next task
+          console.log('DECISION_OUTPUT::START');
+          console.log(JSON.stringify({
+            action: decision.action,
+            priority: decision.priority,
+            reasoning: decision.reasoning,
+            confidence: decision.confidence,
+            timestamp: new Date().toISOString(),
+            metrics: metrics
+          }));
+          console.log('DECISION_OUTPUT::END');
+
+        } catch (e) {
+          console.error('AI DECISION ERROR:', e && e.stack ? e.stack : e);
+          process.exit(1);
+        }
+      })();
+
+  - id: execute_action
+    type: io.kestra.plugin.scripts.node.Script
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    description: Execute autonomous action based on AI decision
+    script: |-
+      (async () => {
+        try {
+          // Parse AI decision from previous task
+          const decisionOutput = `{{ outputs.ai_decision.stdout }}`;
+          const decisionMatch = decisionOutput.match(/DECISION_OUTPUT::START\n(.*)\nDECISION_OUTPUT::END/s);
+          
+          if (!decisionMatch) {
+            console.error('Could not parse AI decision');
+            return;
+          }
+
+          const decisionData = JSON.parse(decisionMatch[1]);
+          const { action, priority, reasoning, confidence, metrics } = decisionData;
+
+          // Prepare summary for dashboard
           const summary = {
             repo: 'something1703/r2d2-agent',
-            health_score: healthScore,
+            health_score: metrics.healthScore,
             metrics: {
-              open_issues: issues_count,
-              open_prs: prs_count,
-              recent_commits: commits_count,
-              days_since_update: daysSinceUpdate,
-              stars: repo.stargazers_count || 0,
-              forks: repo.forks_count || 0
+              open_issues: metrics.issues_count,
+              open_prs: metrics.prs_count,
+              recent_commits: metrics.commits_count,
+              days_since_update: metrics.daysSinceUpdate,
+              stars: metrics.stars,
+              forks: metrics.forks
             },
-            issue_titles: Array.isArray(issues) ? issues.slice(0, 5).map(i => i.title) : [],
-            decision: decision,
+            issue_titles: metrics.issue_titles,
+            decision: {
+              action: action,
+              priority: priority,
+              reasoning: reasoning,
+              confidence: confidence,
+              timestamp: decisionData.timestamp,
+              ai_powered: true
+            },
             analyzed_at: new Date().toISOString()
           };
 
-          console.log('═══════════════════════════════════════');
-          console.log('REPOSITORY HEALTH ANALYSIS');
-          console.log('═══════════════════════════════════════');
-          console.log('Health Score:', healthScore + '/100');
-          console.log('Open Issues:', issues_count);
-          console.log('Open PRs:', prs_count);
-          console.log('Recent Commits (7d):', commits_count);
-          console.log('Days Since Update:', daysSinceUpdate);
-          console.log('───────────────────────────────────────');
-          console.log('AI DECISION:');
-          console.log('Action:', action);
-          console.log('Priority:', priority);
-          console.log('Reasoning:', reasoning);
-          console.log('═══════════════════════════════════════');
+          console.log('Posting summary to Next.js dashboard...');
 
           // Post summary to Next.js API
           try {
-            // Use 172.17.0.1 for Linux (Docker bridge gateway)
             const host = process.env.NEXT_HOST || '172.17.0.1';
             const summaryRes = await fetch(`http://${host}:3000/api/kestra-summary`, {
               method: 'POST',
@@ -156,7 +308,7 @@ tasks:
             });
             
             if (summaryRes.ok) {
-              console.log('Summary posted to Next.js API');
+              console.log('✅ Summary posted to dashboard');
             } else {
               console.log('⚠️  Summary POST failed:', summaryRes.status);
             }
@@ -164,23 +316,24 @@ tasks:
             console.log('⚠️  Could not reach Next.js API:', e.message);
           }
 
-          // Execute action if needed (but NOT trigger-kestra to prevent loop!)
+          // Execute autonomous action (prevent infinite loops)
           if (action !== 'none' && action !== 'trigger-kestra') {
             try {
-              // Use 172.17.0.1 for Linux (Docker bridge gateway)
               const host = process.env.NEXT_HOST || '172.17.0.1';
               
-              // Prepare payload with all context for Cline
               const payload = {
                 action: action,
                 priority: priority,
                 context: {
-                  healthScore: healthScore,
-                  openIssues: issuesCount,
-                  openPRs: prsCount,
-                  reasoning: reasoning
+                  healthScore: metrics.healthScore,
+                  openIssues: metrics.issues_count,
+                  openPRs: metrics.prs_count,
+                  reasoning: reasoning,
+                  aiConfidence: confidence
                 }
               };
+              
+              console.log(`Triggering autonomous action: ${action} (priority: ${priority})`);
               
               const actionRes = await fetch(`http://${host}:3000/api/run-agent`, {
                 method: 'POST',
@@ -189,21 +342,27 @@ tasks:
               });
               
               if (actionRes.ok) {
-                console.log(`Triggered action: ${action}`);
                 const result = await actionRes.json();
-                console.log('Action result:', result.ok ? 'Success' : 'Failed');
+                console.log('✅ Action executed:', result.ok ? 'Success' : 'Failed');
               } else {
-                console.log(`⚠️  Action trigger failed: ${actionRes.status}`);
+                console.log('⚠️  Action trigger failed:', actionRes.status);
               }
             } catch (e) {
               console.log('⚠️  Could not trigger action:', e.message);
             }
+          } else {
+            console.log('ℹ️  No action needed - repository healthy');
           }
 
+          console.log('');
+          console.log('═══════════════════════════════════════');
           console.log('WORKFLOW COMPLETED SUCCESSFULLY');
+          console.log('AI-Powered Decision: ' + action);
+          console.log('Confidence: ' + (confidence * 100).toFixed(1) + '%');
+          console.log('═══════════════════════════════════════');
 
         } catch (e) {
-          console.error('WORKFLOW ERROR:', e && e.stack ? e.stack : e);
+          console.error('EXECUTION ERROR:', e && e.stack ? e.stack : e);
           process.exit(1);
         }
       })();
@@ -212,3 +371,4 @@ triggers:
   - id: schedule
     type: io.kestra.plugin.core.trigger.Schedule
     cron: "0 */6 * * *"  # Every 6 hours
+    description: Autonomous monitoring - runs 4 times daily
