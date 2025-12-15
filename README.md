@@ -39,11 +39,11 @@ R2D2 Agent is an autonomous system that combines AI orchestration, code analysis
 **Here's what happens:**
 
 1. **Every 6 hours**, Kestra fetches your repository metrics from GitHub
-2. **AI decision engine** calculates health score (0-100) and determines what action to take
+2. **Google Gemini AI** analyzes health score (0-100) and decides what action to take with full reasoning
 3. **Intelligent routing** triggers the right automation: issue analysis, code review, or documentation updates
 4. **Cline CLI** executes AI-powered code analysis using Claude
 5. **CodeRabbit** reviews every pull request within seconds
-6. **Dashboard updates** in real-time showing health, decisions, and metrics
+6. **Dashboard updates** in real-time showing health, AI decisions, and detailed reasoning
 
 No configuration. No manual triggers. Just autonomous intelligence.
 
@@ -206,12 +206,12 @@ We strategically combined 4 sponsor technologies into one seamless flow:
 
 ## 🚀 Features
 
-### 🤖 AI-Powered Decision Engine
-### 🤖 AI-Powered Decision Engine
+### 🤖 AI-Powered Decision Engine (Google Gemini)
+- **Real AI decision-making** - Google Gemini 2.0 Flash analyzes repo health and decides actions
 - **Health scoring algorithm** - Custom formula analyzing issues, PRs, commits, and activity
 - **Dynamic priority assignment** - High, medium, or low based on urgency thresholds
 - **6 autonomous actions** - fix-issues, code-review, update-docs, create-pr, trigger-kestra, or none
-- **Reasoning logged** - Every decision explained with metrics and context
+- **Full reasoning displayed** - AI explains every decision with detailed context on dashboard
 - **See the math:** Check [How We Built This](#-how-we-built-this-the-technical-deep-dive) above
 
 ### 🔍 Automated Code Analysis (Cline Integration)
@@ -223,9 +223,11 @@ We strategically combined 4 sponsor technologies into one seamless flow:
 - **Smart output limiting** - Returns 15-25 lines max to save processing time
 
 ### 📊 Real-Time Monitoring Dashboard
-- **Live health score** - Visual indicator (0-100) with color coding
+- **Live health score** - Visual progress bar (0-100) with color coding
+- **AI decision display** - Prominent section showing action, priority, and full reasoning
 - **Auto-refresh** - Updates every 10 seconds without page reload
 - **Workflow history** - See every execution, decision, and outcome with timestamps
+- **Analyzed metrics** - View the exact data AI used to make decisions
 - **GitHub integration** - Direct links to issues and PRs from dashboard
 - **Vercel detection** - Shows read-only mode when viewing deployed version
 
@@ -314,6 +316,12 @@ npm install
 # 3. Configure environment
 cp .env.example .env.local
 # Add your GITHUB_TOKEN to .env.local
+
+# 3b. Configure Kestra secrets (for AI)
+# Go to http://localhost:8080 after starting Kestra
+# Settings → Secrets → Add:
+#   - GITHUB_TOKEN: your GitHub personal access token
+#   - GEMINI_API_KEY: your Google Gemini API key (free tier works)
 
 # 4. Start Kestra orchestrator (runs in background)
 cd infra/kestra
@@ -501,6 +509,7 @@ Built for the **WeMakeDevs Marvel Avengers Hackathon 2025**.
 - [**Vercel**](https://vercel.com) - Deployment and hosting platform
 
 **Other Technologies:**
+- [**Google Gemini**](https://ai.google.dev) - AI decision engine (Gemini 2.0 Flash)
 - [Next.js](https://nextjs.org) - React framework for production
 - [TypeScript](https://www.typescriptlang.org) - Type-safe JavaScript
 - [Docker](https://www.docker.com) - Containerization platform
