@@ -1,5 +1,57 @@
 [
   {
+    "id": "1765836273448",
+    "createdAt": "2025-12-15T22:04:33.448Z",
+    "summary": {
+      "repo": "something1703/r2d2-agent",
+      "health_score": 100,
+      "metrics": {
+        "open_issues": 0,
+        "open_prs": 2,
+        "recent_commits": 30,
+        "days_since_update": 0,
+        "stars": 0,
+        "forks": 0
+      },
+      "issue_titles": [],
+      "decision": {
+        "action": "none",
+        "priority": "none",
+        "reasoning": "AI unavailable",
+        "confidence": 0,
+        "timestamp": "2025-12-15T22:04:33.424Z",
+        "ai_powered": true
+      },
+      "analyzed_at": "2025-12-15T22:04:33.424Z"
+    }
+  },
+  {
+    "id": "1765836153268",
+    "createdAt": "2025-12-15T22:02:33.268Z",
+    "summary": {
+      "repo": "something1703/r2d2-agent",
+      "health_score": 100,
+      "metrics": {
+        "open_issues": 0,
+        "open_prs": 2,
+        "recent_commits": 30,
+        "days_since_update": 0,
+        "stars": 0,
+        "forks": 0
+      },
+      "issue_titles": [],
+      "decision": {
+        "action": "none",
+        "priority": "none",
+        "reasoning": "AI unavailable",
+        "confidence": 0,
+        "timestamp": "2025-12-15T22:02:32.742Z",
+        "ai_powered": true
+      },
+      "analyzed_at": "2025-12-15T22:02:32.742Z"
+    }
+  },
+  {
     "id": "1765746734218",
     "createdAt": "2025-12-14T21:12:14.218Z",
     "summary": {
