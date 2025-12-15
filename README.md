@@ -28,6 +28,8 @@ DevOps teams waste **15+ hours per week** on repetitive tasks:
 - Running code quality checks
 - Updating documentation
 
+**R2D2 Agent automates all of this.**
+
 **What if all of this happened automatically?**
 
 ---
