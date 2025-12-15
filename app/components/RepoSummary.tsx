@@ -222,6 +222,85 @@ export default function RepoSummary() {
                   </div>
                 )}
 
+                {entry.summary.decision && (
+                  <div className={styles['ai-decision-section']}>
+                    <div className={styles['decision-header']}>
+                      <strong>🤖 AI Decision Engine</strong>
+                      {entry.summary.decision.ai_powered && (
+                        <span className={styles['ai-badge']}>Gemini Powered</span>
+                      )}
+                    </div>
+                    
+                    <div className={styles['decision-details']}>
+                      <div className={styles['decision-row']}>
+                        <span className={styles['decision-label']}>Action:</span>
+                        <span className={styles['action-badge']}>{entry.summary.decision.action}</span>
+                      </div>
+                      
+                      <div className={styles['decision-row']}>
+                        <span className={styles['decision-label']}>Priority:</span>
+                        <span className={`${styles['priority-badge']} ${styles[entry.summary.decision.priority]}`}>
+                          {entry.summary.decision.priority}
+                        </span>
+                      </div>
+                      
+                      <div className={styles['decision-reasoning']}>
+                        <span className={styles['decision-label']}>AI Reasoning:</span>
+                        <p className={styles['reasoning-text']}>{entry.summary.decision.reasoning}</p>
+                      </div>
+
+                      {entry.summary.decision.timestamp && (
+                        <div className={styles['decision-timestamp']}>
+                          Decided at: {new Date(entry.summary.decision.timestamp).toLocaleString()}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {entry.summary.metrics && (
+                  <div className={styles['metrics-section']}>
+                    <strong>📊 Analyzed Metrics:</strong>
+                    <div className={styles['metrics-grid']}>
+                      {entry.summary.metrics.open_issues !== undefined && (
+                        <div className={styles['metric-item']}>
+                          <span className={styles['metric-label']}>Open Issues</span>
+                          <span className={styles['metric-value']}>{entry.summary.metrics.open_issues}</span>
+                        </div>
+                      )}
+                      {entry.summary.metrics.open_prs !== undefined && (
+                        <div className={styles['metric-item']}>
+                          <span className={styles['metric-label']}>Open PRs</span>
+                          <span className={styles['metric-value']}>{entry.summary.metrics.open_prs}</span>
+                        </div>
+                      )}
+                      {entry.summary.metrics.recent_commits !== undefined && (
+                        <div className={styles['metric-item']}>
+                          <span className={styles['metric-label']}>Recent Commits</span>
+                          <span className={styles['metric-value']}>{entry.summary.metrics.recent_commits}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {entry.summary.health_score !== undefined && (
+                  <div className={styles['health-score']}>
+                    <strong>Health Score:</strong>
+                    <div className={styles['score-bar']}>
+                      <div 
+                        className={styles['score-fill']} 
+                        style={{ 
+                          width: `${entry.summary.health_score}%`,
+                          backgroundColor: entry.summary.health_score >= 80 ? '#22c55e' : 
+                                         entry.summary.health_score >= 50 ? '#eab308' : '#ef4444'
+                        }}
+                      />
+                      <span className={styles['score-text']}>{entry.summary.health_score}/100</span>
+                    </div>
+                  </div>
+                )}
+
                 {entry.summary.aiSummary && (
                   <div className={styles['summary-item']}>
                     <strong>AI Summary:</strong>
