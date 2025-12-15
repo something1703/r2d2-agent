@@ -1,5 +1,32 @@
 [
   {
+    "id": "1765837142072",
+    "createdAt": "2025-12-15T22:19:02.072Z",
+    "summary": {
+      "repo": "something1703/r2d2-agent",
+      "health_score": 100,
+      "metrics": {
+        "open_issues": 2,
+        "open_prs": 2,
+        "recent_commits": 30,
+        "days_since_update": 0,
+        "stars": 0,
+        "forks": 0
+      },
+      "issue_titles": [
+        "Add user authentication service",
+        "Add data processing utilities"
+      ],
+      "decision": {
+        "action": "code-review",
+        "priority": "low",
+        "reasoning": "Recent activity detected - running quality check",
+        "timestamp": "2025-12-15T22:19:02.056Z"
+      },
+      "analyzed_at": "2025-12-15T22:19:02.056Z"
+    }
+  },
+  {
     "id": "1765836273448",
     "createdAt": "2025-12-15T22:04:33.448Z",
     "summary": {

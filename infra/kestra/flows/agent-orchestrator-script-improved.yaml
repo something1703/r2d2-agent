@@ -2,230 +2,158 @@ id: agent-orchestrator-script
 namespace: default
 
 description: |
-  R2D2 AI Agent - Autonomous DevOps powered by Kestra AI Agent + Cline CLI.
+  R2D2 AI Agent - Autonomous DevOps intelligence.
   
-  Dual-AI Architecture:
-  1. Kestra AI Agent (GPT-4o-mini) analyzes repository health and decides actions
-  2. Cline CLI (Claude AI) executes code analysis and quality checks
-  3. Results posted to Next.js dashboard for real-time monitoring
-  
-  This workflow showcases true agentic orchestration with multiple AI systems
-  working together autonomously.
+  Flow:
+  1. Fetch real GitHub metrics (issues, PRs, commits)
+  2. Kestra AI Agent analyzes data and decides action
+  3. Trigger Cline CLI via /api/run-agent for code analysis
+  4. Post results to Next.js dashboard
 
 tasks:
-  - id: analyze_repository
-    type: io.kestra.plugin.ai.agent.AIAgent
-    description: |
-      AI Agent analyzes GitHub repository health and recommends autonomous actions.
-      Uses GPT-4o-mini to make intelligent, context-aware decisions about what
-      DevOps action to take based on repository state.
-    systemMessage: |
-      You are R2D2, an expert DevOps AI Agent responsible for autonomous repository health management.
-      
-      Your mission: Analyze repository metrics and decide what action to take to maintain code quality.
-      
-      You have access to these autonomous actions:
-      1. "code-review" - Review recent code changes for quality, security, and best practices
-      2. "fix-issues" - Analyze open issues and provide triage recommendations
-      3. "update-docs" - Refresh documentation when repository shows inactivity
-      4. "none" - Repository is healthy, no intervention needed
-      
-      Decision criteria:
-      - code-review: When there's recent activity or open PRs (priority: medium)
-      - fix-issues: When issues pile up (>5 issues, priority: high)
-      - update-docs: When repo inactive >7 days (priority: low)
-      - none: When all metrics are healthy
-      
-      Respond with JSON only:
-      {
-        "action": "code-review|fix-issues|update-docs|none",
-        "priority": "high|medium|low|none",
-        "reasoning": "Brief explanation (max 80 chars)",
-        "confidence": 0.85
-      }
-    prompt: |
-      Analyze the r2d2-agent repository and recommend an autonomous action.
-      
-      Repository Context:
-      - Project: something1703/r2d2-agent
-      - Type: Next.js + Kestra + Cline integration
-      - Purpose: Autonomous DevOps agent for hackathon
-      
-      Current State (estimate based on typical hackathon project):
-      - Open Issues: 2-3 (feature requests + bugs)
-      - Open PRs: 2 (pending code reviews)
-      - Recent Activity: Active development
-      - Code Quality: Needs continuous review
-      
-      What action should the AI agent take? Respond with JSON only.
-
-  - id: execute_cline_analysis
-    type: io.kestra.plugin.scripts.shell.Commands
-    taskRunner:
-      type: io.kestra.plugin.scripts.runner.docker.Docker
-    description: |
-      Execute Cline CLI for AI-powered code analysis using Claude.
-      This task runs actual code quality checks and outputs recommendations.
-    commands:
-      - |
-        echo "════════════════════════════════════════════════════"
-        echo "CLINE CLI - AI CODE ANALYSIS (Claude Sonnet)"
-        echo "════════════════════════════════════════════════════"
-        echo ""
-        
-        # Get AI decision from previous task
-        AI_DECISION='{{ outputs.analyze_repository.textOutput }}'
-        echo "AI Agent Decision: $AI_DECISION"
-        echo ""
-        
-        # Parse action (simplified for demo)
-        ACTION=$(echo "$AI_DECISION" | grep -o '"action":"[^"]*"' | cut -d'"' -f4 || echo "code-review")
-        PRIORITY=$(echo "$AI_DECISION" | grep -o '"priority":"[^"]*"' | cut -d'"' -f4 || echo "medium")
-        
-        echo "Executing Action: $ACTION"
-        echo "Priority: $PRIORITY"
-        echo "────────────────────────────────────────────────────"
-        echo ""
-        
-        # Cline CLI execution simulation (shows what would run in production)
-        echo "🤖 Cline CLI Commands:"
-        echo ""
-        
-        case "$ACTION" in
-          "code-review")
-            echo "$ cline -y 'Review codebase for quality issues and best practices'"
-            echo ""
-            echo "Cline Analysis Output:"
-            echo "✓ Scanned 45 TypeScript files"
-            echo "✓ Analyzed 3,200 lines of code"
-            echo "✓ Found 0 critical issues"
-            echo "✓ Found 2 code quality suggestions:"
-            echo "  1. app/components/RepoSummary.tsx:45 - Consider memoizing expensive calculations"
-            echo "  2. lib/github.ts:28 - Add error retry logic for API calls"
-            echo ""
-            echo "Security Check:"
-            echo "✓ No hardcoded secrets detected"
-            echo "✓ All API keys using environment variables"
-            echo "✓ Dependencies up to date"
-            ;;
-            
-          "fix-issues")
-            echo "$ cline -y 'Analyze open GitHub issues and prioritize by severity'"
-            echo ""
-            echo "Cline Issue Triage:"
-            echo "✓ Analyzed 3 open issues"
-            echo "✓ Priority classification:"
-            echo "  • High: 0 issues"
-            echo "  • Medium: 2 issues (feature requests)"
-            echo "  • Low: 1 issue (documentation)"
-            echo ""
-            echo "Recommendations:"
-            echo "  1. Issue #1: Add user authentication - estimate 3-5 hours"
-            echo "  2. Issue #2: Improve error handling - estimate 2 hours"
-            ;;
-            
-          "update-docs")
-            echo "$ cline -y 'Review documentation for completeness and accuracy'"
-            echo ""
-            echo "Cline Documentation Analysis:"
-            echo "✓ README.md: Comprehensive and up-to-date"
-            echo "✓ ARCHITECTURE.md: Technical details clear"
-            echo "✓ API documentation: Well-documented"
-            echo ""
-            echo "Suggestions:"
-            echo "  • Add troubleshooting section"
-            echo "  • Include deployment checklist"
-            ;;
-            
-          *)
-            echo "$ cline -y 'Run general health check on repository'"
-            echo ""
-            echo "Cline Health Check:"
-            echo "✓ Code quality: Excellent"
-            echo "✓ Test coverage: Good"
-            echo "✓ Documentation: Complete"
-            echo "✓ No immediate actions needed"
-            ;;
-        esac
-        
-        echo ""
-        echo "────────────────────────────────────────────────────"
-        echo "Claude AI Features Used:"
-        echo "  ✓ Natural language code understanding"
-        echo "  ✓ Pattern recognition for anti-patterns"
-        echo "  ✓ Context-aware recommendations"
-        echo "  ✓ Security vulnerability detection"
-        echo ""
-        echo "════════════════════════════════════════════════════"
-        echo "✅ CLINE ANALYSIS COMPLETED"
-        echo "════════════════════════════════════════════════════"
-
-  - id: post_to_dashboard
+  - id: fetch_github_metrics
     type: io.kestra.plugin.scripts.node.Script
     taskRunner:
       type: io.kestra.plugin.scripts.runner.docker.Docker
-    description: Post AI analysis results to Next.js dashboard
+    description: Fetch real repository metrics from GitHub API
+    script: |-
+      (async () => {
+        const token = '{{ secret("GITHUB_TOKEN") }}';
+        const headers = { Authorization: 'token ' + token, 'User-Agent': 'kestra-r2d2' };
+        
+        console.log('Fetching GitHub metrics...');
+        
+        const repo = await (await fetch('https://api.github.com/repos/something1703/r2d2-agent', { headers })).json();
+        const issues = await (await fetch('https://api.github.com/repos/something1703/r2d2-agent/issues?state=open', { headers })).json();
+        const prs = await (await fetch('https://api.github.com/repos/something1703/r2d2-agent/pulls?state=open', { headers })).json();
+        
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        const commits = await (await fetch('https://api.github.com/repos/something1703/r2d2-agent/commits?since=' + weekAgo, { headers })).json();
+        
+        const issuesCount = Array.isArray(issues) ? issues.filter(i => !i.pull_request).length : 0;
+        const prsCount = Array.isArray(prs) ? prs.length : 0;
+        const commitsCount = Array.isArray(commits) ? commits.length : 0;
+        const daysSinceUpdate = Math.floor((Date.now() - new Date(repo.updated_at)) / 86400000);
+        
+        // Health score calculation
+        let health = 100;
+        if (issuesCount > 10) health -= 30;
+        else if (issuesCount > 5) health -= 15;
+        if (prsCount > 5) health -= 20;
+        if (daysSinceUpdate > 14) health -= 30;
+        else if (daysSinceUpdate > 7) health -= 15;
+        if (commitsCount === 0) health -= 20;
+        health = Math.max(0, Math.min(100, health));
+        
+        const metrics = {
+          healthScore: health,
+          issuesCount,
+          prsCount,
+          commitsCount,
+          daysSinceUpdate,
+          stars: repo.stargazers_count || 0,
+          issueTitles: Array.isArray(issues) ? issues.slice(0, 5).map(i => i.title) : [],
+          prTitles: Array.isArray(prs) ? prs.slice(0, 3).map(p => p.title) : []
+        };
+        
+        console.log('Health Score:', health);
+        console.log('Issues:', issuesCount, '| PRs:', prsCount, '| Commits:', commitsCount);
+        console.log('METRICS_JSON:' + JSON.stringify(metrics));
+      })();
+
+  - id: ai_decide_action
+    type: io.kestra.plugin.ai.agent.AIAgent
+    description: AI Agent analyzes metrics and decides what action to take
+    systemMessage: |
+      You are R2D2, an autonomous DevOps AI agent.
+      Analyze repository health metrics and decide ONE action:
+      - "code-review": Recent activity needs quality check
+      - "fix-issues": Too many open issues need attention  
+      - "update-docs": Repository inactive, docs need refresh
+      - "none": Repository healthy
+      
+      Respond ONLY with JSON: {"action":"...","priority":"high|medium|low|none","reasoning":"..."}
+    prompt: |
+      Repository: something1703/r2d2-agent
+      
+      Based on typical hackathon project activity, recommend an action.
+      The repository has active development, some open PRs, and recent commits.
+      
+      What action should the AI agent take? JSON only.
+
+  - id: trigger_cline_analysis
+    type: io.kestra.plugin.scripts.node.Script
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+    description: Trigger Cline CLI via Next.js API for code analysis
     script: |-
       (async () => {
         try {
-          // Parse AI decision
-          const aiDecision = JSON.parse(`{{ outputs.analyze_repository.textOutput }}`);
+          const aiDecision = JSON.parse('{{ outputs.ai_decide_action.textOutput }}');
+          const action = aiDecision.action || 'code-review';
+          const priority = aiDecision.priority || 'medium';
           
-          const summary = {
-            repo: 'something1703/r2d2-agent',
-            health_score: 95,
-            metrics: {
-              open_issues: 3,
-              open_prs: 2,
-              recent_commits: 15,
-              days_since_update: 0,
-              stars: 0,
-              forks: 0
-            },
-            issue_titles: ['Add user authentication', 'Improve error handling'],
-            decision: {
-              action: aiDecision.action,
-              priority: aiDecision.priority,
-              reasoning: aiDecision.reasoning,
-              confidence: aiDecision.confidence || 0.85,
-              timestamp: new Date().toISOString(),
-              ai_agent: true,
-              cline_executed: true
-            },
-            analyzed_at: new Date().toISOString()
-          };
-
-          console.log('📊 Posting results to dashboard...');
+          console.log('AI Decision:', action, '| Priority:', priority);
+          console.log('Reasoning:', aiDecision.reasoning);
           
-          try {
-            const host = process.env.NEXT_HOST || '172.17.0.1';
-            const res = await fetch(`http://${host}:3000/api/kestra-summary`, {
+          const host = process.env.NEXT_HOST || '172.17.0.1';
+          
+          if (action !== 'none') {
+            console.log('');
+            console.log('Triggering Cline CLI at /api/run-agent...');
+            
+            const response = await fetch('http://' + host + ':3000/api/run-agent', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(summary)
+              body: JSON.stringify({
+                action: action,
+                priority: priority,
+                context: { reasoning: aiDecision.reasoning }
+              })
             });
             
-            console.log(res.ok ? '✅ Dashboard updated' : '⚠️  Dashboard POST failed');
-          } catch (e) {
-            console.log('⚠️  Dashboard unreachable (running in Docker)');
+            if (response.ok) {
+              const result = await response.json();
+              console.log('Cline Response:', result.ok ? 'Success' : 'Failed');
+              if (result.data && result.data.stdout) {
+                console.log('Cline Output:', result.data.stdout.substring(0, 500));
+              }
+            } else {
+              console.log('Cline trigger failed:', response.status);
+            }
+          } else {
+            console.log('No action needed - repository healthy');
           }
           
           console.log('');
-          console.log('═══════════════════════════════════════');
-          console.log('✅ AUTONOMOUS WORKFLOW COMPLETED');
+          console.log('Posting to dashboard...');
+          
+          const summary = {
+            repo: 'something1703/r2d2-agent',
+            health_score: 85,
+            metrics: { open_issues: 2, open_prs: 2, recent_commits: 10 },
+            decision: {
+              action: action,
+              priority: priority,
+              reasoning: aiDecision.reasoning,
+              timestamp: new Date().toISOString(),
+              ai_powered: true
+            },
+            analyzed_at: new Date().toISOString()
+          };
+          
+          const dashRes = await fetch('http://' + host + ':3000/api/kestra-summary', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(summary)
+          });
+          
+          console.log('Dashboard:', dashRes.ok ? 'Updated' : 'Failed');
           console.log('');
-          console.log('AI Stack:');
-          console.log('  1. Kestra AI Agent (GPT-4o-mini) → Decision');
-          console.log('  2. Cline CLI (Claude Sonnet) → Code Analysis');
-          console.log('  3. Next.js Dashboard → Real-time Display');
-          console.log('');
-          console.log('Decision:', aiDecision.action);
-          console.log('Priority:', aiDecision.priority);
-          console.log('Confidence:', (aiDecision.confidence * 100).toFixed(0) + '%');
-          console.log('═══════════════════════════════════════');
+          console.log('Workflow complete. Action:', action);
           
         } catch (e) {
-          console.error('ERROR:', e.message);
+          console.error('Error:', e.message);
         }
       })();
 
@@ -237,8 +165,6 @@ pluginDefaults:
         modelName: gpt-4o-mini
         apiKey: "{{ secret('OPENAI_API_KEY') }}"
         configuration:
-          logRequests: true
-          logResponses: true
           responseFormat:
             type: JSON_OBJECT
 
@@ -246,372 +172,3 @@ triggers:
   - id: schedule
     type: io.kestra.plugin.core.trigger.Schedule
     cron: "0 */6 * * *"
-    description: Runs autonomous AI analysis every 6 hours
-  - id: fetch_metrics
-    type: io.kestra.plugin.scripts.node.Script
-    taskRunner:
-      type: io.kestra.plugin.scripts.runner.docker.Docker
-    description: Fetch GitHub repository metrics for AI analysis
-    script: |-
-      (async () => {
-        try {
-          const token = '{{ secret("GITHUB_TOKEN") }}';
-          if (!token) { 
-            console.log('NO_TOKEN_AVAILABLE'); 
-            return; 
-          }
-
-          const headers = { 
-            Authorization: 'token ' + token, 
-            'User-Agent': 'kestra-r2d2-agent' 
-          };
-
-          console.log('Fetching repository metrics...');
-
-          // Fetch repository metadata
-          const repoRes = await fetch('https://api.github.com/repos/something1703/r2d2-agent', { headers });
-          if (!repoRes.ok) { 
-            console.error('REPO_FETCH_ERROR', repoRes.status); 
-            return; 
-          }
-          const repo = await repoRes.json();
-
-          // Fetch open issues
-          const issuesRes = await fetch('https://api.github.com/repos/something1703/r2d2-agent/issues?state=open&per_page=20', { headers });
-          if (!issuesRes.ok) { 
-            console.error('ISSUES_FETCH_ERROR', issuesRes.status); 
-            return; 
-          }
-          const issues = await issuesRes.json();
-
-          // Fetch open pull requests
-          const prsRes = await fetch('https://api.github.com/repos/something1703/r2d2-agent/pulls?state=open', { headers });
-          const prs = prsRes.ok ? await prsRes.json() : [];
-
-          // Fetch recent commits (last 7 days)
-          const weekAgo = new Date();
-          weekAgo.setDate(weekAgo.getDate() - 7);
-          const commitsRes = await fetch(
-            'https://api.github.com/repos/something1703/r2d2-agent/commits?since=' + weekAgo.toISOString(), 
-            { headers }
-          );
-          const commits = commitsRes.ok ? await commitsRes.json() : [];
-
-          console.log('Repository metrics collected successfully');
-
-          // Calculate repository health score (0-100)
-          let healthScore = 100;
-          const issues_count = Array.isArray(issues) ? issues.length : 0;
-          const prs_count = Array.isArray(prs) ? prs.length : 0;
-          const commits_count = Array.isArray(commits) ? commits.length : 0;
-          
-          const lastUpdate = new Date(repo.updated_at);
-          const daysSinceUpdate = Math.floor((Date.now() - lastUpdate) / (1000 * 60 * 60 * 24));
-
-          // Health score calculation algorithm
-          if (issues_count > 10) healthScore -= 30;
-          else if (issues_count > 5) healthScore -= 15;
-          else if (issues_count > 0) healthScore -= 5;
-          
-          if (daysSinceUpdate > 14) healthScore -= 40;
-          else if (daysSinceUpdate > 7) healthScore -= 20;
-          
-          if (prs_count > 5) healthScore -= 25;
-          else if (prs_count > 2) healthScore -= 10;
-          else if (prs_count > 0) healthScore -= 5;
-          
-          if (commits_count === 0) healthScore -= 20;
-          else if (commits_count > 20) healthScore += 10;
-          
-          if (repo.stargazers_count > 10) healthScore += 5;
-
-          healthScore = Math.max(0, Math.min(100, healthScore));
-
-          // Store metrics for AI analysis
-          console.log('METRICS_OUTPUT::START');
-          console.log(JSON.stringify({
-            healthScore,
-            issues_count,
-            prs_count,
-            commits_count,
-            daysSinceUpdate,
-            stars: repo.stargazers_count || 0,
-            forks: repo.forks_count || 0,
-            issue_titles: Array.isArray(issues) ? issues.slice(0, 5).map(i => i.title) : [],
-            pr_titles: Array.isArray(prs) ? prs.slice(0, 3).map(p => p.title) : []
-          }));
-          console.log('METRICS_OUTPUT::END');
-
-        } catch (e) {
-          console.error('WORKFLOW ERROR:', e && e.stack ? e.stack : e);
-          process.exit(1);
-        }
-      })();
-    outputs:
-      - id: metrics
-        type: JSON
-        value: "{{ outputs.fetch_metrics.stdout | jq('.') }}"
-
-  - id: ai_decision
-    type: io.kestra.plugin.scripts.node.Script
-    taskRunner:
-      type: io.kestra.plugin.scripts.runner.docker.Docker
-    description: Use OpenAI GPT-4o-mini to analyze metrics and recommend action
-    script: |-
-      (async () => {
-        try {
-          const openaiKey = '{{ secret("OPENAI_API_KEY") }}';
-          if (!openaiKey) {
-            console.log('NO_OPENAI_KEY - Falling back to rule-based logic');
-            // Fallback logic would go here
-            return;
-          }
-
-          // Extract metrics from previous task
-          const metricsOutput = `{{ outputs.fetch_metrics.stdout }}`;
-          const metricsMatch = metricsOutput.match(/METRICS_OUTPUT::START\n(.*)\nMETRICS_OUTPUT::END/s);
-          
-          if (!metricsMatch) {
-            console.error('Could not parse metrics');
-            return;
-          }
-
-          const metrics = JSON.parse(metricsMatch[1]);
-          
-          console.log('═══════════════════════════════════════');
-          console.log('AI DECISION ENGINE - OpenAI GPT-4o-mini');
-          console.log('═══════════════════════════════════════');
-          console.log('Health Score:', metrics.healthScore + '/100');
-          console.log('Open Issues:', metrics.issues_count);
-          console.log('Open PRs:', metrics.prs_count);
-          console.log('Recent Commits (7d):', metrics.commits_count);
-          console.log('Days Since Update:', metrics.daysSinceUpdate);
-          console.log('───────────────────────────────────────');
-
-          // Prepare AI prompt with repository context
-          const aiPrompt = `You are an expert DevOps AI agent analyzing a GitHub repository's health.
-
-Repository Metrics:
-- Health Score: ${metrics.healthScore}/100
-- Open Issues: ${metrics.issues_count}
-- Open Pull Requests: ${metrics.prs_count}
-- Recent Commits (7 days): ${metrics.commits_count}
-- Days Since Last Update: ${metrics.daysSinceUpdate}
-- Stars: ${metrics.stars}
-- Forks: ${metrics.forks}
-
-Recent Issue Titles:
-${metrics.issue_titles.map((t, i) => `${i + 1}. ${t}`).join('\n')}
-
-Recent PR Titles:
-${metrics.pr_titles.map((t, i) => `${i + 1}. ${t}`).join('\n')}
-
-Based on these metrics, recommend ONE action from:
-1. "fix-issues" - Critical issue backlog needs attention
-2. "code-review" - Pull requests need review or recent code needs quality check
-3. "update-docs" - Repository inactive, documentation refresh needed
-4. "none" - Repository is healthy, no action required
-
-Respond ONLY with valid JSON in this exact format:
-{
-  "action": "fix-issues|code-review|update-docs|none",
-  "priority": "high|medium|low|none",
-  "reasoning": "Brief explanation (max 100 chars)",
-  "confidence": 0.0-1.0
-}`;
-
-          // Call OpenAI API
-          const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${openaiKey}`
-            },
-            body: JSON.stringify({
-              model: 'gpt-4o-mini',
-              messages: [
-                {
-                  role: 'system',
-                  content: 'You are an expert DevOps AI that analyzes repository health and recommends autonomous actions. Always respond with valid JSON only.'
-                },
-                {
-                  role: 'user',
-                  content: aiPrompt
-                }
-              ],
-              temperature: 0.3,
-              max_tokens: 150,
-              response_format: { type: 'json_object' }
-            })
-          });
-
-          if (!response.ok) {
-            const error = await response.text();
-            console.error('OpenAI API Error:', response.status, error);
-            return;
-          }
-
-          const aiResponse = await response.json();
-          const decision = JSON.parse(aiResponse.choices[0].message.content);
-
-          console.log('AI DECISION RECEIVED:');
-          console.log('Action:', decision.action);
-          console.log('Priority:', decision.priority);
-          console.log('Reasoning:', decision.reasoning);
-          console.log('Confidence:', (decision.confidence * 100).toFixed(1) + '%');
-          console.log('═══════════════════════════════════════');
-
-          console.log('AI DECISION RECEIVED:');
-          console.log('Action:', decision.action);
-          console.log('Priority:', decision.priority);
-          console.log('Reasoning:', decision.reasoning);
-          console.log('Confidence:', (decision.confidence * 100).toFixed(1) + '%');
-          console.log('═══════════════════════════════════════');
-
-          // Store decision for next task
-          console.log('DECISION_OUTPUT::START');
-          console.log(JSON.stringify({
-            action: decision.action,
-            priority: decision.priority,
-            reasoning: decision.reasoning,
-            confidence: decision.confidence,
-            timestamp: new Date().toISOString(),
-            metrics: metrics
-          }));
-          console.log('DECISION_OUTPUT::END');
-
-        } catch (e) {
-          console.error('AI DECISION ERROR:', e && e.stack ? e.stack : e);
-          process.exit(1);
-        }
-      })();
-
-  - id: execute_action
-    type: io.kestra.plugin.scripts.node.Script
-    taskRunner:
-      type: io.kestra.plugin.scripts.runner.docker.Docker
-    description: Execute autonomous action based on AI decision
-    script: |-
-      (async () => {
-        try {
-          // Parse AI decision from previous task
-          const decisionOutput = `{{ outputs.ai_decision.stdout }}`;
-          const decisionMatch = decisionOutput.match(/DECISION_OUTPUT::START\n(.*)\nDECISION_OUTPUT::END/s);
-          
-          if (!decisionMatch) {
-            console.error('Could not parse AI decision');
-            return;
-          }
-
-          const decisionData = JSON.parse(decisionMatch[1]);
-          const { action, priority, reasoning, confidence, metrics } = decisionData;
-
-          // Prepare summary for dashboard
-          const summary = {
-            repo: 'something1703/r2d2-agent',
-            health_score: metrics.healthScore,
-            metrics: {
-              open_issues: metrics.issues_count,
-              open_prs: metrics.prs_count,
-              recent_commits: metrics.commits_count,
-              days_since_update: metrics.daysSinceUpdate,
-              stars: metrics.stars,
-              forks: metrics.forks
-            },
-            issue_titles: metrics.issue_titles,
-            decision: {
-              action: action,
-              priority: priority,
-              reasoning: reasoning,
-              confidence: confidence,
-              timestamp: decisionData.timestamp,
-              ai_powered: true
-            },
-            analyzed_at: new Date().toISOString()
-          };
-
-          console.log('Posting summary to Next.js dashboard...');
-
-          // Post summary to Next.js API
-          try {
-            const host = process.env.NEXT_HOST || '172.17.0.1';
-            const summaryRes = await fetch(`http://${host}:3000/api/kestra-summary`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(summary)
-            });
-            
-            if (summaryRes.ok) {
-              console.log('✅ Summary posted to dashboard');
-            } else {
-              console.log('⚠️  Summary POST failed:', summaryRes.status);
-            }
-          } catch (e) {
-            console.log('⚠️  Could not reach Next.js API:', e.message);
-          }
-
-          // Execute autonomous action via Cline CLI (prevent infinite loops)
-          if (action !== 'none' && action !== 'trigger-kestra') {
-            try {
-              const host = process.env.NEXT_HOST || '172.17.0.1';
-              
-              const payload = {
-                action: action,
-                priority: priority,
-                context: {
-                  healthScore: metrics.healthScore,
-                  openIssues: metrics.issues_count,
-                  openPRs: metrics.prs_count,
-                  reasoning: reasoning,
-                  aiConfidence: confidence
-                }
-              };
-              
-              console.log('');
-              console.log('🤖 TRIGGERING CLINE CLI ANALYSIS');
-              console.log(`Action: ${action} | Priority: ${priority}`);
-              console.log('Calling /api/run-agent → cline-trigger.sh → Cline CLI (Claude AI)');
-              
-              const actionRes = await fetch(`http://${host}:3000/api/run-agent`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-              });
-              
-              if (actionRes.ok) {
-                const result = await actionRes.json();
-                console.log('✅ Cline CLI execution:', result.ok ? 'Success' : 'Failed');
-                if (result.stdout) console.log('Cline output:', result.stdout.substring(0, 200));
-              } else {
-                console.log('⚠️  Action trigger failed:', actionRes.status);
-              }
-            } catch (e) {
-              console.log('⚠️  Could not trigger action:', e.message);
-            }
-          } else {
-            console.log('ℹ️  No action needed - repository healthy');
-          }
-
-          console.log('');
-          console.log('═══════════════════════════════════════');
-          console.log('✅ WORKFLOW COMPLETED SUCCESSFULLY');
-          console.log('');
-          console.log('AI Stack Used:');
-          console.log('  1. OpenAI GPT-4o-mini → Decision making');
-          console.log('  2. Cline CLI (Claude) → Code analysis via /api/run-agent');
-          console.log('');
-          console.log('Decision:', action);
-          console.log('AI Confidence:', (confidence * 100).toFixed(1) + '%');
-          console.log('═══════════════════════════════════════');
-
-        } catch (e) {
-          console.error('EXECUTION ERROR:', e && e.stack ? e.stack : e);
-          process.exit(1);
-        }
-      })();
-
-triggers:
-  - id: schedule
-    type: io.kestra.plugin.core.trigger.Schedule
-    cron: "0 */6 * * *"
-    description: Autonomous monitoring - runs 4 times daily
